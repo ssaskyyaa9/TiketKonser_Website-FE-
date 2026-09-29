@@ -4,24 +4,9 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Komponen Placeholder Loading (Spinner presisi di tengah kotak)
 function SkeletonCard() {
   return (
-    <div 
-      style={{ 
-        position: 'relative', 
-        height: '380px', 
-        borderRadius: '16px', 
-        overflow: 'hidden', 
-        border: '1px solid rgba(255, 255, 255, 0.1)', 
-        backgroundColor: '#0c0a14',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justify: 'center',
-        padding: '16px'
-      }}
-    >
+    <div style={{ position: 'relative', height: '380px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: '#0c0a14', display: 'flex', flexDirection: 'column', alignItems: 'center', justify: 'center', padding: '16px' }} >
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', margin: 'auto 0' }}>
         <div className="spinner" />
         <span style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 500 }}>Memuat...</span>
@@ -49,16 +34,12 @@ function SkeletonCard() {
 
 export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(true);
-  
   const concerts = [];
 
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#030205', color: '#ffffff', fontFamily: 'sans-serif' }}>
-      
-      {/* 1. HERO SECTION */}
       <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
         
-        {/* Header / Navbar */}
         <header style={{ position: 'relative', zIndex: 20, width: '100%', backgroundColor: '#030205', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0px', paddingBottom: '0px', paddingLeft: '24px', paddingRight: '24px', height: '70px', display: 'flex', alignItems: 'center' }}>
           <div style={{ maxWidth: '1280px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -72,7 +53,6 @@ export default function LandingPage() {
               <Link href="#" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Tentang kami </Link>
             </nav>
 
-            {/* Link Navigasi ke Halaman Registrasi */}
             <Link href="/registrasi" style={{ textDecoration: 'none' }}>
               <button style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', paddingLeft: '35px', paddingRight: '35px', paddingTop: '5px', paddingBottom: '5px', borderRadius: '8px', fontWeight: 500, fontSize: '16px', color: '#ffffff', border: 'none', cursor: 'pointer' }}> 
                 Bergabung 
@@ -81,20 +61,11 @@ export default function LandingPage() {
           </div>
         </header>
 
-        {/* Gambar Background Hero 100% Terang (Tanpa Redup / Blur) */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-          <Image 
-            src="/icons/bg.png" 
-            alt="Background Konser" 
-            fill 
-            style={{ objectFit: 'cover', objectPosition: 'center', opacity: 1 }} 
-            priority 
-          />
+          <Image src="/icons/bg.png" alt="Background Konser" fill style={{ objectFit: 'cover', objectPosition: 'center', opacity: 1 }} priority />
         </div>
 
-        {/* Hero Content */}
         <div style={{ position: 'relative', zIndex: 10, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', maxWidth: '1280px', width: '100%', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', paddingTop: '40px', paddingBottom: '20px' }}>
-          
           <section style={{ position: 'relative', zIndex: 10, textAlign: 'center', marginTop: 'auto', marginBottom: 'auto', paddingTop: '20px', paddingBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h1 style={{ fontSize: '50px', fontWeight: 800, lineHeight: 1.2, color: '#ffffff', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
               Malam Penuh Kenangan <br />
@@ -122,7 +93,6 @@ export default function LandingPage() {
             </div>
           </section>
 
-          {/* Section 3 Ikon */}
           <section style={{ position: 'relative', zIndex: 10, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '93px', paddingTop: '16px', paddingBottom: '16px', margin: '0 auto', width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #6D19B0', backgroundColor: 'rgba(109, 25, 176, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px', flexShrink: 0 }}>
@@ -154,11 +124,9 @@ export default function LandingPage() {
               </div>
             </div>
           </section>
-
         </div>
       </div>
 
-      {/* 2. KONSER REKOMENDASI SECTION */}
       <div style={{ backgroundColor: '#030205', width: '100%', paddingTop: '10px', paddingBottom: '40px' }}>
         <section style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
           
@@ -168,9 +136,7 @@ export default function LandingPage() {
                 <span style={{ width: '4px', height: '22px', backgroundColor: '#F73BE1', display: 'inline-block', borderRadius: '2px' }}></span>
                 Konser Rekomendasi
               </h2>
-              <p style={{ color: '#d1d5db', fontSize: '15px', marginTop: '6px', margin: 0 }}>
-                Deretan konser megah siap memanjakan telinga kamu.
-              </p>
+              <p style={{ color: '#d1d5db', fontSize: '15px', marginTop: '6px', margin: 0 }}> Deretan konser megah siap memanjakan telinga kamu. </p>
             </div>
 
             <Link href="#" style={{ color: '#F73BE1', fontSize: '14px', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -187,32 +153,12 @@ export default function LandingPage() {
                 ))
               ) : (
                 concerts.map((concert) => (
-                  <div 
-                    key={concert.id} 
-                    style={{ 
-                      position: 'relative', 
-                      height: '380px', 
-                      borderRadius: '16px', 
-                      overflow: 'hidden', 
-                      border: '1px solid rgba(255, 255, 255, 0.15)', 
-                      backgroundColor: '#120f1d',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justify: 'space-between',
-                      padding: '16px'
-                    }}
-                  >
+                  <div key={concert.id} style={{ position: 'relative', height: '380px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: '#120f1d', display: 'flex', flexDirection: 'column', justify: 'space-between', padding: '16px' }} >
                     {concert.image && (
-                      <Image
-                        src={concert.image}
-                        alt={concert.artist}
-                        fill
-                        style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }}
-                      />
+                      <Image src={concert.image} alt={concert.artist} fill style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }} />
                     )}
 
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,15,0.95) 35%, rgba(10,10,15,0.2) 65%, rgba(10,10,15,0.4) 100%)', zIndex: 1 }} />
-
                     <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '10px', padding: '6px 10px', textAlign: 'center', minWidth: '42px' }}>
                         <span style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', color: '#ffffff', lineHeight: 1 }}>{concert.date}</span>
@@ -255,12 +201,10 @@ export default function LandingPage() {
                           Beli Tiket
                         </button>
                       </div>
-
                     </div>
                   </div>
                 ))
               )}
-
             </div>
 
             <button style={{ position: 'absolute', right: '-18px', width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(to right, #8138E8, #F73BE1)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
@@ -271,7 +215,6 @@ export default function LandingPage() {
           </div>
         </section>
       </div>
-
     </main>
   );
 }
