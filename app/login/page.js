@@ -11,114 +11,64 @@ export default function LoginPage() {
 
   return (
     <div className="relative h-screen w-screen bg-[#030205] text-white flex items-center justify-center p-4 overflow-hidden font-sans select-none">
-      
-      {/* Background Concert */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/icons/bg.png"
-          alt="Concert Background"
-          fill
-          priority
-          className="object-cover object-center"
-        />
+        <Image src="/icons/bg.png" alt="Concert Background" fill priority className="object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/60 pointer-events-none"></div>
       </div>
 
-      {/* Tombol Back ke Registrasi */}
       <div className="absolute top-6 left-6 z-20">
-        <Link 
-          href="/registrasi" 
-          className="block transition-transform hover:scale-105 active:scale-95 focus:outline-none"
-        >
-          <Image
-            src="/icons/previous.png"
-            alt="Kembali ke Registrasi"
-            width={48}
-            height={48}
-            className="w-10 h-10 md:w-12 md:h-12 object-contain"
-          />
+        <Link href="/registrasi" className="block transition-transform hover:scale-105 active:scale-95 focus:outline-none" >
+          <Image src="/icons/previous.png" alt="Kembali ke Registrasi" width={48} height={48} className="w-10 h-10 md:w-12 md:h-12 object-contain" />
         </Link>
       </div>
 
-      {/* Card Form - Ukuran persis sama dengan Registrasi (max-w-[440px] & p-6 md:p-8) */}
       <div className="relative z-10 w-[92%] max-w-[440px] bg-black/85 rounded-2xl border border-white/60 p-6 md:p-8 shadow-2xl">
-        
-        {/* Header Header */}
         <div className="text-center mb-7">
           <h1 className="text-2xl md:text-3xl font-bold inline-block bg-gradient-to-r from-[#8138E8] to-[#F73BE1] bg-clip-text text-transparent mb-2">
             Masuk Akun
           </h1>
+
           <p className="text-sm text-gray-300">
             Belum punya akun?{' '}
-            <button
-              type="button"
-              onClick={() => router.push('/registrasi')}
-              className="inline-block bg-gradient-to-r from-[#8138E8] to-[#F73BE1] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0"
-            >
+            <button type="button" onClick={() => router.push('/registrasi')}
+              className="inline-block bg-gradient-to-r from-[#8138E8] to-[#F73BE1] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0" >
               Daftar di sini
             </button>
           </p>
         </div>
 
-        {/* Form Input dengan jarak space-y-5 agar kotak terisi pas & bagus */}
-        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-          
-          {/* Input Email */}
+        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}> 
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image
-                src="/icons/email.png"
-                alt="Email Icon"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <Image src="/icons/email.png" alt="Email Icon" width={20} height={20} className="object-contain" />
             </div>
-            <input
-              type="email"
-              placeholder="Email"
+
+            <input type="email" placeholder="Email"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
 
-          {/* Input Nomor Telepon */}
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image
-                src="/icons/telephone.png"
-                alt="Telephone Icon"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <Image src="/icons/telephone.png" alt="Telephone Icon" width={20} height={20} className="object-contain" />
             </div>
-            <input
-              type="tel"
-              placeholder="Nomor Telepon"
+
+            <input type="tel" placeholder="Nomor Telepon"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
 
-          {/* Input Kata Sandi */}
           <div>
             <div className="relative flex items-center">
               <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-                <Image
-                  src="/icons/padlock.png"
-                  alt="Password Icon"
-                  width={20}
-                  height={20}
-                  className="object-contain"
-                />
+                <Image src="/icons/padlock.png" alt="Password Icon" width={20} height={20} className="object-contain" />
               </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Kata Sandi"
+
+              <input type={showPassword ? "text" : "password"} placeholder="Kata Sandi"
                 className="w-full bg-transparent border border-white/60 rounded-xl py-3.5 pl-12 pr-11 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
+
+              <button type="button" onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3.5 text-gray-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
               >
                 {showPassword ? (
@@ -134,29 +84,20 @@ export default function LoginPage() {
               </button>
             </div>
             
-            {/* Opsi Tambahan Lupa Kata Sandi */}
             <div className="flex justify-end mt-1.5">
-              <button
-                type="button"
-                className="text-xs text-gray-400 hover:text-[#F73BE1] transition-colors focus:outline-none"
-              >
+              <button type="button" className="text-xs text-gray-400 hover:text-[#F73BE1] transition-colors focus:outline-none" >
                 Lupa Kata Sandi?
               </button>
             </div>
           </div>
 
           <div className="pt-2">
-            <button
-              type="submit"
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#8138E8] to-[#F73BE1] text-white font-semibold text-sm md:text-base shadow-lg hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer"
-            >
+            <button type="submit" className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#8138E8] to-[#F73BE1] text-white font-semibold text-sm md:text-base shadow-lg hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer" >
               Masuk Sekarang
             </button>
           </div>
-
         </form>
       </div>
-
     </div>
   );
 }

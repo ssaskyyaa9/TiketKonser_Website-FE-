@@ -11,45 +11,26 @@ export default function RegisterPage() {
 
   return (
     <div className="relative h-screen w-screen bg-[#030205] text-white flex items-center justify-center p-4 overflow-hidden font-sans select-none">
-      
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/icons/bg.png"
-          alt="Concert Background"
-          fill
-          priority
-          className="object-cover object-center"
-        />
+        <Image src="/icons/bg.png" alt="Concert Background" fill priority className="object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/60 pointer-events-none"></div>
       </div>
 
       <div className="absolute top-6 left-6 z-20">
-        <Link 
-          href="/landing" 
-          className="block transition-transform hover:scale-105 active:scale-95 focus:outline-none"
-        >
-          <Image
-            src="/icons/previous.png"
-            alt="Kembali ke Landing"
-            width={48}
-            height={48}
-            className="w-10 h-10 md:w-12 md:h-12 object-contain"
-          />
+        <Link href="/landing" className="block transition-transform hover:scale-105 active:scale-95 focus:outline-none" >
+          <Image src="/icons/previous.png" alt="Kembali ke Landing" width={48} height={48} className="w-10 h-10 md:w-12 md:h-12 object-contain" />
         </Link>
       </div>
 
       <div className="relative z-10 w-[92%] max-w-[440px] bg-black/85 rounded-2xl border border-white/60 p-6 md:p-8 shadow-2xl">
-        
         <div className="text-center mb-6">
-          {/* Judul Daftar Akun dengan inline-block agar gradasi selalu ter-render */}
           <h1 className="text-2xl md:text-3xl font-bold inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent mb-2">
             Daftar Akun
           </h1>
+
           <p className="text-sm text-gray-300">
             Sudah punya akun?{' '}
-            <button
-              type="button"
-              onClick={() => router.push('/login')}
+            <button type="button" onClick={() => router.push('/login')}
               className="inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0"
             >
               Masuk di sini
@@ -58,76 +39,46 @@ export default function RegisterPage() {
         </div>
 
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image
-                src="/icons/user.png"
-                alt="User Icon"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <Image src="/icons/user.png" alt="User Icon" width={20} height={20} className="object-contain" />
             </div>
-            <input
-              type="text"
-              placeholder="Nama Lengkap"
+
+            <input type="text" placeholder="Nama Lengkap"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
 
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image
-                src="/icons/email.png"
-                alt="Email Icon"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <Image src="/icons/email.png" alt="Email Icon" width={20} height={20} className="object-contain" />
             </div>
-            <input
-              type="email"
-              placeholder="Email"
+
+            <input type="email" placeholder="Email"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
 
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image
-                src="/icons/telephone.png"
-                alt="Telephone Icon"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <Image src="/icons/telephone.png" alt="Telephone Icon" width={20} height={20} className="object-contain" />
             </div>
-            <input
-              type="tel"
-              placeholder="Nomor Telepon"
+
+            <input type="tel" placeholder="Nomor Telepon"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
 
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image
-                src="/icons/padlock.png"
-                alt="Password Icon"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
+              <Image src="/icons/padlock.png" alt="Password Icon" width={20} height={20} className="object-contain" />
             </div>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Kata Sandi"
+
+            <input type={showPassword ? "text" : "password"} placeholder="Kata Sandi"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-11 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
+
+            <button type="button" onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3.5 text-gray-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
             >
               {showPassword ? (
@@ -144,17 +95,13 @@ export default function RegisterPage() {
           </div>
 
           <div className="pt-2">
-            <button
-              type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#8138E8] to-[#F73BE1] text-white font-semibold text-sm md:text-base shadow-lg hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer"
-            >
+            <button type="submit"
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#8138E8] to-[#F73BE1] text-white font-semibold text-sm md:text-base shadow-lg hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer" >
               Daftar Sekarang
             </button>
           </div>
-
         </form>
       </div>
-
     </div>
   );
 }
