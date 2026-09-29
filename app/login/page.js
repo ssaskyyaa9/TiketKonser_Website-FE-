@@ -145,7 +145,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Tombol Submit */}
           <div className="pt-2">
             <button
               type="submit"
