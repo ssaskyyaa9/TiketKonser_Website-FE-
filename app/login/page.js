@@ -24,14 +24,14 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-[92%] max-w-[440px] bg-black/85 rounded-2xl border border-white/60 p-6 md:p-8 shadow-2xl">
         <div className="text-center mb-7">
-          <h1 className="text-2xl md:text-3xl font-bold inline-block bg-gradient-to-r from-[#8138E8] to-[#F73BE1] bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent mb-2">
             Masuk Akun
           </h1>
 
           <p className="text-sm text-gray-300">
             Belum punya akun?{' '}
             <button type="button" onClick={() => router.push('/registrasi')}
-              className="inline-block bg-gradient-to-r from-[#8138E8] to-[#F73BE1] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0" >
+              className="inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0" >
               Daftar di sini
             </button>
           </p>
