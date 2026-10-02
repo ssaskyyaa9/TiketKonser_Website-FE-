@@ -302,60 +302,24 @@ export default function LandingPage() {
         </section>
 
         <section style={{ maxWidth: '1280px', margin: '60px auto 0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
-          <div style={{
-            position: 'relative',
-            borderRadius: '20px',
-            border: '1px solid #8138E8',
-            backgroundColor: '#07050e',
-            display: 'flex',
-            alignItems: 'center',
-            justify: 'space-between',
-            padding: '36px 48px',
-            overflow: 'hidden',
-            boxShadow: '0 0 30px rgba(129, 56, 232, 0.15)'
-          }}>
-            {/* Sisi Kiri: Teks Promo */}
+          <div style={{ position: 'relative', borderRadius: '20px', border: '1px solid #8138E8', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justify: 'space-between', padding: '36px 48px', overflow: 'hidden', boxShadow: '0 0 30px rgba(129, 56, 232, 0.15)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 2 }}>
-              <span style={{ fontSize: '14px', fontWeight: 700, color: '#B900A3', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                PROMO SPESIAL
-              </span>
-              <h2 style={{ fontSize: '38px', fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.1 }}>
-                Diskon Hingga
-              </h2>
-              <span style={{ fontSize: '56px', fontWeight: 900, background: 'linear-gradient(90deg, #8138E8 0%, #F73BE1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1 }}>
-                30%
-              </span>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#B900A3', letterSpacing: '1px', textTransform: 'uppercase' }}> PROMO SPESIAL </span>
+              <h2 style={{ fontSize: '38px', fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.1 }}> Diskon Hingga </h2>
+              <span style={{ fontSize: '56px', fontWeight: 900, background: 'linear-gradient(90deg, #8138E8 0%, #F73BE1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1 }}> 30% </span>
             </div>
 
-            {/* Sisi Tengah: Ketentuan & Tombol Klaim */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px', zIndex: 2, marginLeft: 'auto', marginRight: '60px' }}>
               <div>
-                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', margin: 0 }}>
-                  Untuk pembelian tiket
-                </h3>
-                <p style={{ fontSize: '15px', color: '#F73BE1', margin: '4px 0 0 0', fontWeight: 600 }}>
-                  minimal 2 tiket
-                </p>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', margin: 0, marginRight: 60 }}> Untuk pembelian tiket </h3>
+                <p style={{ fontSize: '17px', color: '#F73BE1', margin: '4px 0 0 0', fontWeight: 600 }}> minimal 2 tiket </p>
               </div>
-              <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>
-                Periode terbatas!
-              </p>
-              <button style={{
-                marginTop: '8px',
-                background: 'linear-gradient(to right, #8138E8, #F73BE1)',
-                border: 'none',
-                borderRadius: '10px',
-                padding: '10px 24px',
-                color: '#ffffff',
-                fontWeight: 600,
-                fontSize: '14px',
-                cursor: 'pointer'
-              }}>
-                Klaim Promo
-              </button>
+
+              <p style={{ fontSize: '16px', color: '#6b7280', margin: 0 }}> Periode terbatas! </p>
+
+              <button style={{ marginTop: '8px', background: 'linear-gradient(to right, #8138E8, #F73BE1)', border: 'none', borderRadius: '10px', padding: '10px 24px', color: '#ffffff', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}> Klaim Promo </button>
             </div>
 
-            {/* Sisi Kanan: Gambar Promo */}
             <div style={{ position: 'relative', width: '320px', height: '160px', flexShrink: 0, zIndex: 1 }}>
               <Image src="/icons/diskon.png" alt="Promo Diskon" fill style={{ objectFit: 'contain' }} />
             </div>
@@ -368,109 +332,45 @@ export default function LandingPage() {
               <span style={{ width: '5px', height: '20px', background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)', display: 'inline-block', borderRadius: '2px' }} />
               <span style={{ background: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block' }}> Tentang Kami </span>
             </h2>
-            <p style={{ color: '#d1d5db', fontSize: '20px', marginTop: '8px', margin: 0 }}>
-              Kami hadir untuk pengalaman konser tanpa ribet dan tanpa khawatir.
-            </p>
+            <p style={{ color: '#d1d5db', fontSize: '20px', marginTop: '8px', margin: 0 }}> Kami hadir untuk pengalaman konser tanpa ribet dan tanpa khawatir. </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px' }}>
-
-            {/* Fitur 1 */}
-            <div style={{
-              backgroundColor: '#080612',
-              border: '1px solid rgba(129, 56, 232, 0.4)',
-              borderRadius: '16px',
-              padding: '24px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center'
-            }}>
+            <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <Image src="/icons/tiketresmi.png" alt="Tiket Resmi" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Tiket Resmi</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Langsung dari penyelenggara</p>
             </div>
 
-            {/* Fitur 2 */}
-            <div style={{
-              backgroundColor: '#080612',
-              border: '1px solid rgba(129, 56, 232, 0.4)',
-              borderRadius: '16px',
-              padding: '24px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center'
-            }}>
+            <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <Image src="/icons/mic.png" alt="Promo Eksklusif" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Promo Eksklusif</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Dapatkan harga spesial yang tidak tersedia ditempat lain</p>
             </div>
 
-            {/* Fitur 3 */}
-            <div style={{
-              backgroundColor: '#080612',
-              border: '1px solid rgba(129, 56, 232, 0.4)',
-              borderRadius: '16px',
-              padding: '24px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center'
-            }}>
+            <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <Image src="/icons/security.png" alt="Pembayaran Aman" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Pembayaran Aman</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Sistem pembayaran terenkripsi & terverifikasi</p>
             </div>
 
-            {/* Fitur 4 */}
-            <div style={{
-              backgroundColor: '#080612',
-              border: '1px solid rgba(129, 56, 232, 0.4)',
-              borderRadius: '16px',
-              padding: '24px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center'
-            }}>
+            <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <Image src="/icons/tiketpraktis.png" alt="E-Tiket Praktis" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>E-Tiket Praktis</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tiket digital langsung masuk ke email kamu tanpa antre</p>
             </div>
 
-            {/* Fitur 5 */}
-            <div style={{
-              backgroundColor: '#080612',
-              border: '1px solid rgba(129, 56, 232, 0.4)',
-              borderRadius: '16px',
-              padding: '24px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center'
-            }}>
+            <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <Image src="/icons/pengembalian.png" alt="Pengembalian Mudah" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Pengembalian Mudah</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Proses pengembalian cepat jika event dibatalkan</p>
             </div>
 
-            {/* Fitur 6 */}
-            <div style={{
-              backgroundColor: '#080612',
-              border: '1px solid rgba(129, 56, 232, 0.4)',
-              borderRadius: '16px',
-              padding: '24px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center'
-            }}>
+            <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <Image src="/icons/pelayanan.png" alt="Pelayanan" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Pelayanan</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tim kami siap membantu 24/7</p>
             </div>
-
           </div>
         </section>
       </div>

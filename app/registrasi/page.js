@@ -4,10 +4,36 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { registerCustomer } from '@/lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const phone = formData.get('phone');
+    const password = formData.get('password');
+
+    try {
+      const data = await registerCustomer(name, email, password, phone);
+
+      console.log('Register berhasil:', data);
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      router.push('/login');
+    } catch (error) {
+      console.error('Register gagal:', error);
+      alert(error.message);
+    }
+  };
 
   return (
     <div className="relative h-screen w-screen bg-[#030205] text-white flex items-center justify-center p-4 overflow-hidden font-sans select-none">
@@ -38,13 +64,13 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={handleRegister}>
           <div className="relative flex items-center">
             <div className="absolute left-4 flex items-center justify-center w-5 h-5">
               <Image src="/icons/user.png" alt="User Icon" width={20} height={20} className="object-contain" />
             </div>
 
-            <input type="text" placeholder="Nama Lengkap"
+            <input type="text" name="name" placeholder="Nama Lengkap"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
@@ -54,7 +80,7 @@ export default function RegisterPage() {
               <Image src="/icons/email.png" alt="Email Icon" width={20} height={20} className="object-contain" />
             </div>
 
-            <input type="email" placeholder="Email"
+            <input type="email" name="email" placeholder="Email"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
@@ -64,7 +90,7 @@ export default function RegisterPage() {
               <Image src="/icons/telephone.png" alt="Telephone Icon" width={20} height={20} className="object-contain" />
             </div>
 
-            <input type="tel" placeholder="Nomor Telepon"
+            <input type="tel" name="phone" placeholder="Nomor Telepon"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
           </div>
@@ -74,7 +100,7 @@ export default function RegisterPage() {
               <Image src="/icons/padlock.png" alt="Password Icon" width={20} height={20} className="object-contain" />
             </div>
 
-            <input type={showPassword ? "text" : "password"} placeholder="Kata Sandi"
+            <input type={showPassword ? "text" : "password"} name="password" placeholder="Kata Sandi"
               className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-11 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
             />
 
