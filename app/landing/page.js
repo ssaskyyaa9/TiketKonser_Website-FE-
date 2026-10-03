@@ -336,40 +336,145 @@ export default function LandingPage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px' }}>
+
+            {/* Card 1 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <Image src="/icons/tiketresmi.png" alt="Tiket Resmi" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Tiket Resmi</h3>
+              <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <Image src="/icons/tiketresmi.png" alt="Tiket Resmi" width={100} height={100} style={{ objectFit: 'contain' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Tiket Resmi</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Langsung dari penyelenggara</p>
             </div>
 
+            {/* Card 2 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <Image src="/icons/mic.png" alt="Promo Eksklusif" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Promo Eksklusif</h3>
+              <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <Image src="/icons/eksklusif.png" alt="Promo Eksklusif" width={120} height={120} style={{ objectFit: 'contain' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Promo Eksklusif</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Dapatkan harga spesial yang tidak tersedia ditempat lain</p>
             </div>
 
+            {/* Card 3 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <Image src="/icons/security.png" alt="Pembayaran Aman" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Pembayaran Aman</h3>
+              <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <Image src="/icons/pembayaran.png" alt="Pembayaran Aman" width={100} height={100} style={{ objectFit: 'contain' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Pembayaran Aman</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Sistem pembayaran terenkripsi & terverifikasi</p>
             </div>
 
+            {/* Card 4 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <Image src="/icons/tiketpraktis.png" alt="E-Tiket Praktis" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>E-Tiket Praktis</h3>
+              <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <Image src="/icons/tiketpraktis.png" alt="E-Tiket Praktis" width={100} height={100} style={{ objectFit: 'contain' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>E-Tiket Praktis</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tiket digital langsung masuk ke email kamu tanpa antre</p>
             </div>
 
+            {/* Card 5 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <Image src="/icons/pengembalian.png" alt="Pengembalian Mudah" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Pengembalian Mudah</h3>
+              <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <Image src="/icons/pengembalian.png" alt="Pengembalian Mudah" width={100} height={100} style={{ objectFit: 'contain' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Pengembalian Mudah</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Proses pengembalian cepat jika event dibatalkan</p>
             </div>
 
+            {/* Card 6 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <Image src="/icons/pelayanan.png" alt="Pelayanan" width={50} height={50} style={{ objectFit: 'contain', marginBottom: '16px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0' }}>Pelayanan</h3>
+              <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <Image src="/icons/pelayanan.png" alt="Pelayanan" width={100} height={100} style={{ objectFit: 'contain' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Pelayanan</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tim kami siap membantu 24/7</p>
+            </div>
+          </div>
+        </section>
+
+        <section style={{ maxWidth: '1280px', margin: '60px auto 0 auto', paddingLeft: '24px', paddingRight: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ position: 'relative', borderRadius: '16px', padding: '12px 32px', marginBottom: '50px', backgroundColor: '#030205' }}>
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+              <defs>
+                <linearGradient id="dashed-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#6D19B0" />
+                  <stop offset="100%" stopColor="#B900A3" />
+                </linearGradient>
+              </defs>
+              <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="15" fill="none" stroke="url(#dashed-gradient)" strokeWidth="2" strokeDasharray="6, 6" />
+            </svg>
+
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#ffffff', margin: 0, textAlign: 'center', position: 'relative', zIndex: 1 }}>
+              Dengan cara kerja mudah di pahami
+            </h2>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '0 10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Image src="/icons/mencari.png" alt="Mencari Konser" width={46} height={46} style={{ objectFit: 'contain' }} />
+                </div>
+                <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 1 </span>
+              </div>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', margin: '22px 0 0 0', textAlign: 'center' }}> Mencari Konser </p>
+            </div>
+
+            <div style={{ marginBottom: '28px' }}>
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Image src="/icons/memilih.png" alt="Memilih Tiket" width={46} height={46} style={{ objectFit: 'contain' }} />
+                </div>
+                <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 2 </span>
+              </div>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', margin: '22px 0 0 0', textAlign: 'center' }}> Memilih Tiket </p>
+            </div>
+
+            <div style={{ marginBottom: '28px' }}>
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Image src="/icons/bayar.png" alt="Lakukan Pembayaran" width={46} height={46} style={{ objectFit: 'contain' }} />
+                </div>
+                <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 3 </span>
+              </div>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', margin: '22px 0 0 0', textAlign: 'center' }}> Lakukan Pembayaran </p>
+            </div>
+
+            <div style={{ marginBottom: '28px' }}>
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Image src="/icons/e-tik.png" alt="Dapatkan E-Tiket" width={46} height={46} style={{ objectFit: 'contain' }} />
+                </div>
+                <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 4 </span>
+              </div>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', margin: '22px 0 0 0', textAlign: 'center' }}> Dapatkan E-Tiket </p>
+            </div>
+
+            <div style={{ marginBottom: '28px' }}>
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Image src="/icons/nikmati.png" alt="Nikmati Konser!" width={46} height={46} style={{ objectFit: 'contain' }} />
+                </div>
+                <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 5 </span>
+              </div>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', margin: '22px 0 0 0', textAlign: 'center' }}> Nikmati Konser! </p>
             </div>
           </div>
         </section>
