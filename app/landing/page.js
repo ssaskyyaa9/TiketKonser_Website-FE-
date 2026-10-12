@@ -505,7 +505,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <div style={{ maxWidth: '1100px', margin: '50px' }}>
+        <div style={{ maxWidth: '1100px', margin: '75px' }}>
         <div style={{ position: 'relative', borderRadius: '16px', border: '1px solid #231238', background: 'linear-gradient(135deg, #130321 0%, #08010f 100%)', padding: '32px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '80px', gap: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ width: '64px', height: '64px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -529,85 +529,87 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div style={{ position: 'relative', marginBottom: '100px' }}>
-          <div style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>
-            <Image src="/icons/bintang.png" alt="Decoration Left" width={100} height={100} style={{ objectFit: 'contain' }} />
-          </div>
-
-          <div style={{ position: 'absolute', right: '-40px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>
-            <Image src="/icons/bintang.png" alt="Decoration Right" width={100} height={100} style={{ objectFit: 'contain' }} />
-          </div>
-
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 700, margin: '0 0 8px 0' }}>
-              <span style={{ color: '#B900A3', marginRight: '8px' }}>|</span>
-              <span style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Klik untuk menjawab pertanyaan anda
-              </span>
-
-            </h2>
-            <p style={{ fontSize: '16px', color: '#cccccc', margin: 0 }}> Beberapa informasi yang mungkin dapat membantu anda </p>
-          </div>
-
-          <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {faqData.map((item, index) => (
-              <div key={index} onClick={() => toggleFaq(index)} style={{ backgroundColor: '#05020a', border: '1px solid #1f1033', borderRadius: '8px', padding: '16px 20px', cursor: 'pointer', transition: 'all 0.3s ease' }} >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 500, color: '#e0e0e0' }}>
-                    {item.question}
-                  </span>
-
-                  <span style={{ fontSize: '18px', color: '#8138E8', fontWeight: 'bold', transition: 'transform 0.2s', transform: openFaq === index ? 'rotate(45deg)' : 'rotate(0deg)' }}> + </span>
-                </div>
-
-                {openFaq === index && (
-                  <p style={{ fontSize: '13px', color: '#a0a0a0', marginTop: '12px', margin: '12px 0 0 0', lineHeight: '1.6', borderTop: '1px solid #140a21', paddingTop: '10px' }}>
-                    {item.answer}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <footer style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '40px', paddingTop: '40px', borderTop: '1px solid #140a21' }}>
-          <div>
-            <div style={{ marginBottom: '16px' }}>
-              <Image src="/icons/logo.png" alt="ShowTime Logo" width={140} height={36} style={{ objectFit: 'contain' }} />
+          <div style={{ position: 'relative', marginBottom: '100px' }}>
+            <div style={{ position: 'absolute', left: '-62px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>
+              <Image src="/icons/bintang.png" alt="Decoration Left" width={230} height={230} style={{ objectFit: 'contain' }} />
             </div>
 
-            <p style={{ fontSize: '14px', color: '#a0a0a0', lineHeight: '1.6', margin: 0, maxWidth: '220px' }}>
-              Tiket anda menuju moment tak terlupakan
-            </p>
+            <div style={{ position: 'absolute', right: '-60px', top: '70%', transform: 'translateY(-50%)', opacity: 0.6 }}>
+              <Image src="/icons/bintang.png" alt="Decoration Right" width={230} height={230} style={{ objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 700, margin: '0 0 8px 0' }}>
+                <span style={{ color: '#B900A3', marginRight: '8px' }}>|</span>
+                <span style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  Klik untuk menjawab pertanyaan anda
+                </span>
+              </h2>
+              <p style={{ fontSize: '22px', color: '#cccccc', margin: 0 }}> Beberapa informasi yang mungkin dapat membantu anda </p>
+            </div>
+
+            <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {faqData.map((item, index) => (
+                <div key={index} onClick={() => toggleFaq(index)} style={{ backgroundColor: '#05020a', border: '1px solid #8138E8', borderRadius: '8px', padding: '16px 20px', cursor: 'pointer', transition: 'all 0.3s ease' }} >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '16px', fontWeight: 500, color: '#e0e0e0' }}>
+                      {item.question}
+                    </span>
+                    <span style={{ fontSize: '16px', color: '#8138E8', fontWeight: 'bold', transition: 'transform 0.2s', transform: openFaq === index ? 'rotate(45deg)' : 'rotate(0deg)' }}> + </span>
+                  </div>
+
+                  {openFaq === index && (
+                    <p style={{ fontSize: '13px', color: '#a0a0a0', marginTop: '12px', margin: '12px 0 0 0', lineHeight: '1.6', borderTop: '1px solid #140a21', paddingTop: '10px' }}>
+                      {item.answer}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div>
-            <h4 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff' }}>Navigasi</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <li><a href="#" style={{ color: '#a0a0a0', textDecoration: 'none', fontSize: '14px' }}>Beranda</a></li>
-              <li><a href="#" style={{ color: '#a0a0a0', textDecoration: 'none', fontSize: '14px' }}>Konser</a></li>
-              <li><a href="#" style={{ color: '#a0a0a0', textDecoration: 'none', fontSize: '14px' }}>Trending</a></li>
-              <li><a href="#" style={{ color: '#a0a0a0', textDecoration: 'none', fontSize: '14px' }}>Tentang Kami</a></li>
-            </ul>
-          </div>
+          <div style={{ width: '100%', paddingLeft: '5%', paddingRight: '5%', backgroundColor: '#000000', boxSizing: 'border-box' }}>
+            <style>{` @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; } } `}</style>
 
-          <div>
-            <h4 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff' }}>Bantuan</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <li><a href="#" style={{ color: '#a0a0a0', textDecoration: 'none', fontSize: '14px' }}>Cara Kerja</a></li>
-              <li><a href="#" style={{ color: '#a0a0a0', textDecoration: 'none', fontSize: '14px' }}>FAQ</a></li>
-            </ul>
-          </div>
+            <footer className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.2fr', gap: '150px', alignItems: 'start', backgroundColor: '#000000', color: '#ffffff', paddingTop: '5px', paddingBottom: '0px', margin:'0px' }}> <div>
+              <div style={{ marginBottom: '-25px', marginLeft: '-50px', marginTop: '-74px' }}>
+                <Image src="/icons/logo.png" alt="ShowTime Logo" width={300} height={300} style={{ objectFit: 'contain', display: 'block' }} />
+              </div>
 
-          <div>
-            <h4 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff' }}>Hubungi Kami</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <li style={{ color: '#a0a0a0', fontSize: '14px' }}>help@showtime.id</li>
-              <li style={{ color: '#a0a0a0', fontSize: '14px' }}>+62 812-3456-7890</li>
-              <li style={{ color: '#a0a0a0', fontSize: '14px' }}>Jakarta, Indonesia</li>
-            </ul>
+                <p style={{ fontSize: '16px', color: '#ffffff', lineHeight: '1.4', margin: 0, maxWidth: '210px', marginTop: '-50px', marginLeft: '-20px'}}>
+                  Tiket anda menuju <br />
+                  moment tak terlupakan
+                </p>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff', lineHeight: '1.2' }}> Navigasi </h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Beranda</a></li>
+                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Konser</a></li>
+                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Trending</a></li>
+                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Tentang Kami</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff', lineHeight: '1.2' }}> Bantuan </h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Cara Kerja</a></li>
+                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>FAQ</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff', lineHeight: '1.2' }}> Hubungi Kami </h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <li style={{ color: '#ffffff', fontSize: '15px' }}>help@showtime.id</li>
+                  <li style={{ color: '#ffffff', fontSize: '15px' }}>+62 812-3456-7890</li>
+                  <li style={{ color: '#ffffff', fontSize: '15px' }}>Jakarta, Indonesia</li>
+                </ul>
+              </div>
+            </footer>
           </div>
-        </footer>
       </div>
       </div>
     </main>
