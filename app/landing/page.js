@@ -369,8 +369,6 @@ export default function LandingPage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px' }}>
-
-            {/* Card 1 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                 <Image src="/icons/tiketresmi.png" alt="Tiket Resmi" width={100} height={100} style={{ objectFit: 'contain' }} />
@@ -379,7 +377,6 @@ export default function LandingPage() {
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Langsung dari penyelenggara</p>
             </div>
 
-            {/* Card 2 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                 <Image src="/icons/eksklusif.png" alt="Promo Eksklusif" width={120} height={120} style={{ objectFit: 'contain' }} />
@@ -388,7 +385,6 @@ export default function LandingPage() {
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Dapatkan harga spesial yang tidak tersedia ditempat lain</p>
             </div>
 
-            {/* Card 3 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                 <Image src="/icons/pembayaran.png" alt="Pembayaran Aman" width={100} height={100} style={{ objectFit: 'contain' }} />
@@ -397,7 +393,6 @@ export default function LandingPage() {
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Sistem pembayaran terenkripsi & terverifikasi</p>
             </div>
 
-            {/* Card 4 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                 <Image src="/icons/tiketpraktis.png" alt="E-Tiket Praktis" width={100} height={100} style={{ objectFit: 'contain' }} />
@@ -406,7 +401,6 @@ export default function LandingPage() {
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tiket digital langsung masuk ke email kamu tanpa antre</p>
             </div>
 
-            {/* Card 5 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                 <Image src="/icons/pengembalian.png" alt="Pengembalian Mudah" width={100} height={100} style={{ objectFit: 'contain' }} />
@@ -415,7 +409,6 @@ export default function LandingPage() {
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Proses pengembalian cepat jika event dibatalkan</p>
             </div>
 
-            {/* Card 6 */}
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                 <Image src="/icons/pelayanan.png" alt="Pelayanan" width={100} height={100} style={{ objectFit: 'contain' }} />
@@ -577,17 +570,12 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <footer style={{
-          display: 'grid',
-          gridTemplateColumns: '2fr 1fr 1fr 1.5fr',
-          gap: '40px',
-          paddingTop: '40px',
-          borderTop: '1px solid #140a21'
-        }}>
+        <footer style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: '40px', paddingTop: '40px', borderTop: '1px solid #140a21' }}>
           <div>
             <div style={{ marginBottom: '16px' }}>
               <Image src="/icons/logo.png" alt="ShowTime Logo" width={140} height={36} style={{ objectFit: 'contain' }} />
             </div>
+
             <p style={{ fontSize: '14px', color: '#a0a0a0', lineHeight: '1.6', margin: 0, maxWidth: '220px' }}>
               Tiket anda menuju moment tak terlupakan
             </p>
