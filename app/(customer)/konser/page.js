@@ -29,13 +29,13 @@ export default async function KonserPage({ searchParams }) {
   const link = (u) => { const p = new URLSearchParams(); for (const [k, v] of Object.entries({ q, city, date, price, urut: u })) if (v) p.set(k, v); return `/konser?${p}`; };
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-10 pt-[110px] sm:px-6">
+    <div className="mx-auto w-full max-w-[var(--page-max)] px-4 pb-10 pt-[110px] sm:px-6">
       <h1 className="brand-text font-display text-[32px] font-extrabold sm:text-[40px]">Cari konser</h1>
       <div className="mt-6 max-w-[690px]"><HeroSearch cities={cities} defaults={{ q, city, date, price }} /></div>
 
       <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
         <p role="status" className="text-sm" style={{ color: "var(--fg-muted)" }}>{res.status === 200 ? `${rows.length} konser ditemukan` : "Konser belum bisa dimuat"}</p>
-        <nav aria-label="Urutkan" className="flex gap-2">
+        <nav aria-label="Urutkan" className="flex flex-wrap gap-2">
           {Object.entries(SORTS).map(([k, [label]]) => (
             <Link key={k} href={link(k)} aria-current={urut === k ? "true" : undefined} className="rounded-full border px-4 py-1.5 text-sm" style={{ borderColor: urut === k ? "var(--magenta-500)" : "var(--line-strong)", background: urut === k ? "rgba(129,56,232,.25)" : "transparent" }}>{label}</Link>
           ))}

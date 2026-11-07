@@ -26,7 +26,7 @@ export default async function ConcertDetail({ params }) {
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-4 pb-10 pt-[110px] sm:px-6">
-      <nav aria-label="Jejak" className="mb-6 text-sm" style={{ color: "var(--fg-muted)" }}><Link href="/konser" className="underline-offset-4 hover:underline">Konser</Link> / {title}</nav>
+      <nav aria-label="Jejak" className="mb-6 text-sm" style={{ color: "var(--fg-muted)" }}><Link href="/konser" className="inline-block py-1.5 underline-offset-4 hover:underline">Konser</Link> / {title}</nav>
       <div className="grid gap-8 md:grid-cols-[320px_1fr]">
         <div className="relative isolate overflow-hidden" style={{ aspectRatio: "3 / 5", borderRadius: 14, border: "1px solid var(--line-strong)" }}><Poster name={concert.name} thumbnail={concert.thumbnail} sizes="320px" priority /></div>
         <div>

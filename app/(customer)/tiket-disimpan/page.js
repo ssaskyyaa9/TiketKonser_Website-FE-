@@ -8,7 +8,7 @@ export default async function SavedPage() {
   const { data, status } = await getData("/api/customer/favorites");
   const rows = (data || []).filter((f) => f.concert);
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-10 pt-[110px] sm:px-6">
+    <div className="mx-auto w-full max-w-[var(--page-max)] px-4 pb-10 pt-[110px] sm:px-6">
       <h1 className="brand-text font-display text-[32px] font-extrabold sm:text-[40px]">Tiket Disimpan</h1>
       <p className="mt-1" style={{ color: "var(--fg-muted)" }}>Konser yang kamu tandai. Ikon simpan di sebelah kanan menghapusnya dari daftar.</p>
       <div className="mt-8 flex flex-col gap-4">

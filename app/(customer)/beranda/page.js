@@ -34,10 +34,10 @@ export default async function BerandaPage() {
       <section className="relative isolate overflow-hidden" aria-labelledby="judul-hero">
         <Image src="/icons/bg.png" alt="" fill priority sizes="100vw" style={{ objectFit: "cover", objectPosition: "center top", zIndex: -2 }} />
         <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: "linear-gradient(180deg, rgba(5,3,9,.45) 0%, rgba(8,6,15,.35) 55%, var(--ink-900) 100%)" }} />
-        <div className="mx-auto grid w-full max-w-[1320px] items-start gap-10 px-4 pb-16 pt-[120px] sm:px-6 lg:grid-cols-[minmax(0,1fr)_393px] lg:pb-24">
-          <div className="min-w-0 lg:max-w-[690px]">
-            <h1 id="judul-hero" className="brand-text font-display text-[34px] font-extrabold leading-[1.1] sm:text-[44px]">Mau nonton konser apa hari ini?</h1>
-            <p className="mt-4 text-2xl font-semibold sm:text-[30px]">Yuk cari tiket konser favoritmu!</p>
+        <div className="mx-auto grid w-full max-w-[var(--page-max)] items-start gap-10 px-4 pb-16 pt-[120px] sm:px-6 lg:grid-cols-[minmax(0,1fr)_393px] lg:pb-24">
+          <div className="min-w-0 lg:max-w-[690px] min-[1900px]:max-w-[820px]">
+            <h1 id="judul-hero" className="brand-text font-display text-[30px] font-extrabold leading-[1.1] sm:text-[44px] min-[1900px]:text-[56px]">Mau nonton konser apa hari ini?</h1>
+            <p className="mt-4 text-xl font-semibold sm:text-[30px]">Yuk cari tiket konser favoritmu!</p>
             <div className="mt-8"><HeroSearch cities={cities} /></div>
           </div>
           <div className="flex flex-col gap-5">
@@ -47,7 +47,7 @@ export default async function BerandaPage() {
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-6">
+      <div className="mx-auto w-full max-w-[var(--page-max)] px-4 sm:px-6">
         {failed ? (
           <p role="alert" className="my-10 rounded-xl border p-5 text-sm" style={{ borderColor: "var(--danger)", color: "var(--fg-muted)" }}>Konser belum bisa dimuat. Muat ulang halaman ini sebentar lagi.</p>
         ) : null}

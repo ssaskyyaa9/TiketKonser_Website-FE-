@@ -27,7 +27,7 @@ export default async function CustomerLayout({ children }) {
     <div className="flex min-h-screen flex-col" style={{ background: "var(--ink-900)" }}>
       <CustomerHeader user={publicUser(user)} />
       <main id="konten" className="flex-1">{children}</main>
-      <footer className="mx-auto w-full max-w-[1320px] px-4 pb-10 pt-16 sm:px-6">
+      <footer className="mx-auto w-full max-w-[var(--page-max)] px-4 pb-10 pt-16 sm:px-6">
         <p className="text-lg" style={{ color: "#e04bd0" }}>Showtime 2026</p>
       </footer>
     </div>

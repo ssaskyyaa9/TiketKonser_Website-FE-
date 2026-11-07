@@ -22,7 +22,7 @@ export default async function HistoryPage() {
                 <p className="font-semibold">{o.orderNumber}</p>
                 <p className="mt-1 text-sm" style={{ color: "var(--fg-muted)" }}>{formatDateTime(o.paymentDate || o.createdAt)}{o.paymentMethod ? ` · ${String(o.paymentMethod).toUpperCase()}` : ""}</p>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className={`chip ${tone}`}>{label}</span>
                 <span className="text-lg font-bold">{rupiah(o.totalAmount)}</span>
                 {o.status === "paid" ? <a href={`/api/customer/orders/${o.id}/pdf`} target="_blank" rel="noopener" className="btn btn--secondary btn--sm"><Download size={16} aria-hidden="true" />Tiket PDF</a> : null}

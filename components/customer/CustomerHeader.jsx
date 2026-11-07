@@ -30,7 +30,7 @@ function relTime(iso) {
   return `${Math.floor(s / 86400)} hari lalu`;
 }
 
-const iconBtn = "relative grid h-10 w-10 place-items-center rounded-full transition-colors hover:bg-white/10";
+const iconBtn = "relative grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors hover:bg-white/10";
 const panel = "absolute right-0 top-[calc(100%+8px)] z-50 rounded-xl border shadow-2xl";
 const panelStyle = { background: "var(--ink-800)", borderColor: "var(--line-strong)", boxShadow: "var(--shadow-1)" };
 
@@ -114,10 +114,10 @@ export default function CustomerHeader({ user }) {
       style={{ background: scrolled ? "rgba(8,6,15,.92)" : "linear-gradient(180deg, rgba(5,3,9,.75), rgba(5,3,9,0))", backdropFilter: scrolled ? "blur(12px)" : "none", borderBottom: scrolled ? "1px solid var(--line)" : "1px solid transparent" }}
     >
       <a href="#konten" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-black">Lewati ke konten</a>
-      <div className="mx-auto flex h-[76px] w-full max-w-[1320px] items-center gap-3 px-4 sm:px-6">
-        <Logo height={32} href="/beranda" />
+      <div className="mx-auto flex h-[68px] w-full max-w-[var(--page-max)] items-center gap-2 px-3 sm:h-[76px] sm:gap-3 sm:px-6">
+        <Logo height={28} href="/beranda" className="shrink-0" />
 
-        <div className="ml-auto flex items-center gap-1 sm:gap-3">
+        <div className="ml-auto flex min-w-0 items-center gap-0 sm:gap-3">
           <span className="hidden rounded-md border px-3.5 py-1.5 text-sm md:inline-block" style={{ borderColor: "var(--violet-500)", color: "var(--violet-500)" }} aria-label="Peran: Penonton">Penonton</span>
 
           <div className="relative">
@@ -169,10 +169,10 @@ export default function CustomerHeader({ user }) {
           </div>
 
           <div className="relative">
-            <button type="button" data-trigger="account" className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-white/10" aria-haspopup="menu" aria-expanded={open === "account"} onClick={toggle("account")}>
-              <span className="grid h-[38px] w-[38px] place-items-center rounded-full" style={{ background: "var(--violet-600)" }}><UserRound size={20} strokeWidth={1.75} aria-hidden="true" /></span>
+            <button type="button" data-trigger="account" className="flex items-center gap-1.5 rounded-full py-1 pl-1 pr-1.5 transition-colors hover:bg-white/10 sm:gap-2.5 sm:pr-2" aria-haspopup="menu" aria-expanded={open === "account"} onClick={toggle("account")}>
+              <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full sm:h-[38px] sm:w-[38px]" style={{ background: "var(--violet-600)" }}><UserRound size={20} strokeWidth={1.75} aria-hidden="true" /></span>
               <span className="hidden max-w-[14ch] truncate text-[20px] font-medium sm:inline">{user.name}</span>
-              <ChevronDown size={20} aria-hidden="true" className="transition-transform duration-150" style={{ transform: open === "account" ? "rotate(180deg)" : "none" }} />
+              <ChevronDown size={20} aria-hidden="true" className="shrink-0 transition-transform duration-150 max-[359px]:hidden" style={{ transform: open === "account" ? "rotate(180deg)" : "none" }} />
               <span className="sr-only sm:hidden">{user.name}</span>
             </button>
             {open === "account" ? (

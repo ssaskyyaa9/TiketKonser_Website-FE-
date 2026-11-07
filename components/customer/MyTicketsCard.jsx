@@ -8,7 +8,7 @@ export default function MyTicketsCard({ tickets = [] }) {
     <section aria-label="Tiket Saya" style={{ borderRadius: 14, border: "1px solid var(--violet-500)", background: "rgba(15,11,28,.82)", backdropFilter: "blur(6px)" }}>
       <div className="flex items-center justify-between border-b px-5 py-3.5" style={{ borderColor: "var(--line-strong)" }}>
         <h2 className="flex items-center gap-3 text-base font-medium"><Ticket size={22} strokeWidth={1.75} aria-hidden="true" />Tiket Saya</h2>
-        <Link href="/tiket-saya" className="text-sm underline-offset-4 hover:underline" style={{ color: "#e04bd0" }}>Lihat semua &rarr;</Link>
+        <Link href="/tiket-saya" className="inline-flex items-center py-1.5 text-sm underline-offset-4 hover:underline" style={{ color: "#e04bd0" }}>Lihat semua &rarr;</Link>
       </div>
       {tickets.length ? (
         <ul className="m-0 list-none p-0">

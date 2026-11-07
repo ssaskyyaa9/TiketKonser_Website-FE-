@@ -30,7 +30,7 @@ export default function Carousel({ label, children }) {
         onScroll={measure}
         onKeyDown={(e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); }}
         tabIndex={0}
-        className="row-scroll grid gap-4 overflow-x-auto pb-1 focus-visible:outline-offset-4 [grid-auto-flow:column] [grid-auto-columns:78%] sm:[grid-auto-columns:calc((100%-16px)/2)] md:[grid-auto-columns:calc((100%-32px)/3)] lg:[grid-auto-columns:calc((100%-48px)/4)] xl:[grid-auto-columns:calc((100%-64px)/5)]"
+        className="row-scroll cust-carousel grid gap-4 overflow-x-auto pb-1 focus-visible:outline-offset-4 [grid-auto-flow:column] [grid-auto-columns:78%] sm:[grid-auto-columns:calc((100%-16px)/2)] md:[grid-auto-columns:calc((100%-32px)/3)] lg:[grid-auto-columns:calc((100%-48px)/4)] xl:[grid-auto-columns:calc((100%-64px)/5)]"
         style={{ scrollSnapType: "x mandatory" }}
       >
         {children}
