@@ -1,133 +1,223 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { registerCustomer } from '@/lib/api';
+import { useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, Building2, Check, Clock, Mail, Phone, Ticket, UserRound } from "lucide-react";
+import AuthLayout from "@/components/auth/AuthLayout";
+import PasswordInput from "@/components/auth/PasswordInput";
+import PasswordStrength, { scorePassword } from "@/components/auth/PasswordStrength";
+import Alert from "@/components/ui/Alert";
+import Button, { buttonClass } from "@/components/ui/Button";
+import { Input, Textarea } from "@/components/ui/Field";
+import { register } from "@/lib/api";
+
+const TYPES = [
+  { value: "customer", label: "Penonton", hint: "Beli tiket, simpan favorit", icon: Ticket },
+  { value: "organizer", label: "Penyelenggara", hint: "Buat dan kelola konser", icon: Building2 },
+];
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const digits = (v) => String(v || "").replace(/\D/g, "");
+
+const EMPTY = {
+  name: "", email: "", phone: "", password: "", confirmPassword: "",
+  companyName: "", city: "", website: "", instagram: "", address: "", description: "",
+  bankName: "", bankAccount: "", bankHolder: "",
+};
+
+// Aturan sama dengan route handler /api/auth/register (server tetap memvalidasi ulang).
+function validateAccount(v) {
+  const e = {};
+  const name = v.name.trim();
+  if (!name) e.name = "Nama wajib diisi.";
+  else if (name.length < 2 || name.length > 100) e.name = "Nama harus 2–100 karakter.";
+  if (!v.email.trim()) e.email = "Email wajib diisi.";
+  else if (!EMAIL_RE.test(v.email.trim())) e.email = "Format email belum benar. Contoh: nama@email.com.";
+  if (v.phone.trim() && (digits(v.phone).length < 10 || digits(v.phone).length > 15)) e.phone = "Nomor telepon harus 10–15 angka.";
+  if (!v.password) e.password = "Kata sandi wajib diisi.";
+  else if (v.password.length < 8) e.password = "Kata sandi minimal 8 karakter.";
+  else if (scorePassword(v.password) < 2) e.password = "Kata sandi terlalu mudah ditebak. Tambahkan variasi karakter.";
+  if (v.confirmPassword !== v.password) e.confirmPassword = "Ulangi kata sandi dengan tulisan yang sama.";
+  return e;
+}
+function validateCompany(v) {
+  const e = {};
+  if (!v.companyName.trim()) e.companyName = "Nama perusahaan atau komunitas wajib diisi.";
+  if (!v.city.trim()) e.city = "Kota wajib diisi.";
+  if (!v.address.trim()) e.address = "Alamat wajib diisi.";
+  return e;
+}
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const formRef = useRef(null);
+  const [type, setType] = useState("customer");
+  const [step, setStep] = useState(1);
+  const [values, setValues] = useState(EMPTY);
+  const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState(null);
 
-  const handleRegister = async (e) => {
+  const isOrg = type === "organizer";
+  const lastStep = isOrg ? 2 : 1;
+
+  const set = (key) => (e) => {
+    setValues((p) => ({ ...p, [key]: e.target.value }));
+    setErrors((p) => (p[key] ? { ...p, [key]: undefined } : p));
+  };
+
+  const focusFirst = (found) => {
+    const first = Object.keys(found).find((k) => found[k]);
+    if (first) formRef.current?.querySelector(`[name="${first}"]`)?.focus();
+  };
+
+  const pickType = (next) => {
+    setType(next);
+    setStep(1);
+    setErrors({});
+    setFormError("");
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
+    if (busy) return;
+    setFormError("");
 
-    const formData = new FormData(e.currentTarget);
+    const account = validateAccount(values);
+    if (step === 1) {
+      setErrors(account);
+      if (Object.values(account).some(Boolean)) return focusFirst(account);
+      if (isOrg) return setStep(2);
+    }
 
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const phone = formData.get('phone');
-    const password = formData.get('password');
+    const company = isOrg ? validateCompany(values) : {};
+    if (isOrg && Object.values(company).some(Boolean)) {
+      setErrors(company);
+      return focusFirst(company);
+    }
 
+    setBusy(true);
     try {
-      const data = await registerCustomer(name, email, password, phone);
-
-      console.log('Register berhasil:', data);
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
-      router.push('/login');
-    } catch (error) {
-      console.error('Register gagal:', error);
-      alert(error.message);
+      const { confirmPassword, ...payload } = values;
+      void confirmPassword;
+      const data = await register({ type, ...payload });
+      if (data.pending) {
+        setPending({ name: data.name, companyName: data.companyName });
+        setBusy(false);
+        return;
+      }
+      router.replace("/akun");
+      router.refresh();
+    } catch (err) {
+      setFormError(err.message);
+      if (err.code === "EMAIL_TAKEN") {
+        setStep(1);
+        setErrors({ email: "Email ini sudah terdaftar." });
+      }
+      setBusy(false);
     }
   };
 
-  return (
-    <div className="relative h-screen w-screen bg-[#030205] text-white flex items-center justify-center p-4 overflow-hidden font-sans select-none">
-      <div className="absolute inset-0 z-0">
-        <Image src="/icons/bg.png" alt="Concert Background" fill priority className="object-cover object-center" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/60 pointer-events-none"></div>
-      </div>
-
-      <div className="absolute top-6 left-6 z-20">
-        <Link href="/landing" className="block transition-transform hover:scale-105 active:scale-95 focus:outline-none" >
-          <Image src="/icons/previous.png" alt="Kembali ke Landing" width={48} height={48} className="w-10 h-10 md:w-12 md:h-12 object-contain" />
-        </Link>
-      </div>
-
-      <div className="relative z-10 w-[92%] max-w-[440px] bg-black/85 rounded-2xl border border-white/60 p-6 md:p-8 shadow-2xl">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent mb-2">
-            Daftar Akun
-          </h1>
-
-          <p className="text-sm text-gray-300">
-            Sudah punya akun?{' '}
-            <button type="button" onClick={() => router.push('/login')}
-              className="inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0"
-            >
-              Masuk di sini
-            </button>
+  if (pending) {
+    return (
+      <AuthLayout title="Pendaftaran terkirim" subtitle="Satu langkah lagi sebelum bisa masuk." backHref="/login" backLabel="Masuk">
+        <div className="flex flex-col gap-5">
+          <Alert tone="ok" title={`Terima kasih, ${pending.name}.`}>
+            Akun <strong>{pending.companyName}</strong> sudah kami terima.
+          </Alert>
+          <p className="flex items-start gap-3 text-sm" style={{ color: "var(--fg-muted)" }}>
+            <Clock size={18} strokeWidth={1.75} aria-hidden="true" style={{ color: "var(--warn)", flexShrink: 0, marginTop: 1 }} />
+            Tim ShowTime memverifikasi data perusahaanmu dulu. Setelah disetujui, kamu bisa masuk dan mulai membuat konser.
           </p>
+          <Link href="/login" className={buttonClass({ variant: "primary", size: "lg", block: true })}>
+            Ke halaman masuk
+            <ArrowRight size={18} strokeWidth={1.75} aria-hidden="true" />
+          </Link>
         </div>
+      </AuthLayout>
+    );
+  }
 
-        <form className="space-y-4" onSubmit={handleRegister}>
-          <div className="relative flex items-center">
-            <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image src="/icons/user.png" alt="User Icon" width={20} height={20} className="object-contain" />
+  return (
+    <AuthLayout
+      title="Buat akun"
+      subtitle={isOrg ? `Langkah ${step} dari 2 — ${step === 1 ? "data akunmu" : "data penyelenggara"}.` : "Gratis, selesai dalam satu menit."}
+      footer={
+        <>
+          Sudah punya akun?{" "}
+          <Link href="/login" className="auth__link">
+            Masuk
+          </Link>
+        </>
+      }
+    >
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+        {formError ? <Alert tone="danger" title="Pendaftaran belum bisa diproses">{formError}</Alert> : null}
+
+        {step === 1 ? (
+          <>
+            <fieldset className="m-0 p-0 border-0 min-w-0">
+              <legend className="field__label mb-2">Daftar sebagai</legend>
+              <div className="grid grid-cols-2 gap-2">
+                {TYPES.map(({ value, label, hint, icon: Icon }) => (
+                  <label key={value} className="choice">
+                    <input type="radio" name="type" value={value} checked={type === value} onChange={() => pickType(value)} />
+                    <span className="flex items-center gap-2 text-sm font-semibold">
+                      <Icon size={16} strokeWidth={1.75} aria-hidden="true" />
+                      {label}
+                    </span>
+                    <span className="block text-xs mt-1" style={{ color: "var(--fg-muted)" }}>{hint}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <Input id="reg-name" name="name" label="Nama lengkap" required icon={UserRound} autoComplete="name" autoFocus placeholder="Contoh: Rara Anjani" value={values.name} onChange={set("name")} error={errors.name} />
+            <Input id="reg-email" name="email" type="email" label="Email" required icon={Mail} autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="nama@email.com" value={values.email} onChange={set("email")} error={errors.email} />
+            <Input id="reg-phone" name="phone" type="tel" inputMode="tel" label="Nomor telepon" hint="Opsional. Untuk kabar penting soal tiket." icon={Phone} autoComplete="tel" placeholder="08xx xxxx xxxx" value={values.phone} onChange={set("phone")} error={errors.phone} />
+
+            <div>
+              <PasswordInput id="reg-password" name="password" label="Kata sandi" required autoComplete="new-password" placeholder="Minimal 8 karakter" value={values.password} onChange={set("password")} error={errors.password} />
+              <PasswordStrength value={values.password} />
             </div>
-
-            <input type="text" name="name" placeholder="Nama Lengkap"
-              className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
-            />
-          </div>
-
-          <div className="relative flex items-center">
-            <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image src="/icons/email.png" alt="Email Icon" width={20} height={20} className="object-contain" />
+            <PasswordInput id="reg-confirm" name="confirmPassword" label="Ulangi kata sandi" required autoComplete="new-password" placeholder="Tulis ulang kata sandi" value={values.confirmPassword} onChange={set("confirmPassword")} error={errors.confirmPassword} />
+          </>
+        ) : (
+          <>
+            <Input id="reg-company" name="companyName" label="Nama perusahaan atau komunitas" required icon={Building2} autoComplete="organization" autoFocus placeholder="Contoh: Starlight Live Indonesia" value={values.companyName} onChange={set("companyName")} error={errors.companyName} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input id="reg-city" name="city" label="Kota" required placeholder="Jakarta" autoComplete="address-level2" value={values.city} onChange={set("city")} error={errors.city} />
+              <Input id="reg-instagram" name="instagram" label="Instagram" hint="Opsional" placeholder="@namaakun" value={values.instagram} onChange={set("instagram")} />
             </div>
+            <Textarea id="reg-address" name="address" label="Alamat" required rows={2} autoComplete="street-address" placeholder="Alamat lengkap perusahaan" value={values.address} onChange={set("address")} error={errors.address} />
+            <Input id="reg-website" name="website" label="Situs web" hint="Opsional" placeholder="namadomain.id" value={values.website} onChange={set("website")} />
+            <Textarea id="reg-desc" name="description" label="Tentang kamu" hint="Opsional. Pengalaman mengadakan acara." rows={3} value={values.description} onChange={set("description")} />
 
-            <input type="email" name="email" placeholder="Email"
-              className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
-            />
-          </div>
+            <details className="rounded-[var(--r-md)] border px-4 py-3" style={{ borderColor: "var(--line-strong)" }}>
+              <summary className="cursor-pointer text-sm font-semibold">Rekening pencairan dana (opsional)</summary>
+              <div className="flex flex-col gap-4 mt-4">
+                <Input id="reg-bank" name="bankName" label="Nama bank" placeholder="Bank Mandiri" value={values.bankName} onChange={set("bankName")} />
+                <Input id="reg-acc" name="bankAccount" label="Nomor rekening" inputMode="numeric" placeholder="1234567890" value={values.bankAccount} onChange={set("bankAccount")} />
+                <Input id="reg-holder" name="bankHolder" label="Nama pemilik rekening" placeholder="Sesuai buku tabungan" value={values.bankHolder} onChange={set("bankHolder")} />
+                <p className="text-xs" style={{ color: "var(--fg-dim)" }}>Bisa dilengkapi nanti sebelum menarik dana.</p>
+              </div>
+            </details>
+          </>
+        )}
 
-          <div className="relative flex items-center">
-            <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image src="/icons/telephone.png" alt="Telephone Icon" width={20} height={20} className="object-contain" />
-            </div>
-
-            <input type="tel" name="phone" placeholder="Nomor Telepon"
-              className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
-            />
-          </div>
-
-          <div className="relative flex items-center">
-            <div className="absolute left-4 flex items-center justify-center w-5 h-5">
-              <Image src="/icons/padlock.png" alt="Password Icon" width={20} height={20} className="object-contain" />
-            </div>
-
-            <input type={showPassword ? "text" : "password"} name="password" placeholder="Kata Sandi"
-              className="w-full bg-transparent border border-white/60 rounded-xl py-3 pl-12 pr-11 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
-            />
-
-            <button type="button" onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 text-gray-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
-            >
-              {showPassword ? (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12c1.274 4.057 5.065 7 9.542 7 4.477 0 8.268-2.943 9.542-7-1.274-4.057-5.064-7-9.542-7-4.477 0-8.268 2.943-9.542 7z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              )}
-            </button>
-          </div>
-
-          <div className="pt-2">
-            <button type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#8138E8] to-[#F73BE1] text-white font-semibold text-sm md:text-base shadow-lg hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer" >
-              Daftar Sekarang
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex gap-3 mt-1">
+          {step === 2 ? (
+            <Button variant="secondary" size="lg" icon={ArrowLeft} onClick={() => { setStep(1); setErrors({}); }}>
+              Kembali
+            </Button>
+          ) : null}
+          <Button type="submit" variant="primary" size="lg" block loading={busy} iconRight={step === lastStep ? Check : ArrowRight}>
+            {busy ? "Mendaftarkan..." : step < lastStep ? "Lanjut" : isOrg ? "Daftar penyelenggara" : "Buat akun"}
+          </Button>
+        </div>
+      </form>
+    </AuthLayout>
   );
 }
