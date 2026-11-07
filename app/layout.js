@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="id"
+      data-scroll-behavior="smooth"
       className={`${jakarta.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

@@ -108,7 +108,7 @@ export default function RegisterPage() {
         setBusy(false);
         return;
       }
-      router.replace("/akun");
+      router.replace("/beranda");
       router.refresh();
     } catch (err) {
       setFormError(err.message);

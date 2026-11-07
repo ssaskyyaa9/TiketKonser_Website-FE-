@@ -98,7 +98,7 @@ export default function LandingPage() {
         <header style={{ position: 'relative', zIndex: 20, width: '100%', backgroundColor: '#030205', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0px', paddingBottom: '0px', paddingLeft: '24px', paddingRight: '24px', height: '70px', display: 'flex', alignItems: 'center' }}>
           <div style={{ maxWidth: '1280px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Link href="#beranda" aria-label="ShowTime — ke atas"><Image src="/icons/logo.png" alt="SHOWTIME Logo" width={250} height={250} style={{ objectFit: 'contain', cursor: 'pointer', height: 'auto', marginLeft: '-10px', marginTop: '6px' }} /></Link>
+              <Link href="#beranda" aria-label="ShowTime — ke atas"><Image src="/icons/logo.png" alt="SHOWTIME Logo" width={240} height={160} style={{ width: 240, maxWidth: 'none', flexShrink: 0, objectFit: 'contain', cursor: 'pointer', height: 'auto', marginLeft: '-10px', marginTop: '6px' }} /></Link>
             </div>
 
             <nav style={{ display: 'flex', alignItems: 'center', gap: '75px', fontSize: '16px', fontWeight: 500, color: '#e5e7eb', marginLeft: '-100px'}}>
@@ -140,12 +140,12 @@ export default function LandingPage() {
 
             <div style={{ display: 'flex', gap: '20px', marginTop: '32px' }}>
               <button type="button" onClick={() => goTo('konser')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'linear-gradient(to right, #8138E8, #F73BE1)', paddingLeft: '28px', paddingRight: '28px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '16px', fontWeight: 600, fontSize: '16px', color: '#ffffff', border: 'none', cursor: 'pointer' }}>
-                <Image src="/icons/tiket lp.png" alt="Tiket Icon" width={25} height={25} style={{ marginRight: '6px' }} />
+                <Image src="/icons/tiket lp.png" alt="Tiket Icon" width={25} height={25} style={{ height: 'auto', marginRight: '6px' }} />
                 <span>Cari Konser</span>
               </button>
 
               <button type="button" onClick={() => goTo('trending')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', backgroundColor: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(8px)', border: '1px solid #6b7280', paddingLeft: '28px', paddingRight: '28px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '16px', fontWeight: 600, fontSize: '16px', color: '#ffffff', cursor: 'pointer' }}>
-                <Image src="/icons/kalender up.png" alt="Kalender Icon" width={20} height={20} style={{ marginRight: '6px' }} />
+                <Image src="/icons/kalender up.png" alt="Kalender Icon" width={20} height={20} style={{ height: 'auto', marginRight: '6px' }} />
                 <span>Lihat Jadwal</span>
               </button>
             </div>
@@ -156,7 +156,7 @@ export default function LandingPage() {
               <div style={{ position: 'relative', width: '48px', height: '48px' }}>
                 <div style={{ content: '""', position: 'absolute', inset: 0, borderRadius: '50%', padding: '1px', border: '1px solid transparent', background: 'linear-gradient(to right, #6D19B0, #B900A3) border-box', WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', zIndex: -1 }}></div>               
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Image src="/icons/music.png" alt="Music Icon" width={24} height={24} style={{ objectFit: 'contain', position: 'relative', zIndex: 1 }} />
+                  <Image src="/icons/music.png" alt="Music Icon" width={24} height={24} style={{ height: 'auto', objectFit: 'contain', position: 'relative', zIndex: 1 }} />
                 </div>
               </div>
 
@@ -170,7 +170,7 @@ export default function LandingPage() {
               <div style={{ position: 'relative', width: '48px', height: '48px' }}>
                 <div style={{ content: '""', position: 'absolute', inset: 0, borderRadius: '50%', padding: '1px', border: '1px solid transparent', background: 'linear-gradient(to right, #6D19B0, #B900A3) border-box', WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', zIndex: -1 }}></div>
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Image src="/icons/security.png" alt="Security Icon" width={24} height={24} style={{ objectFit: 'contain', position: 'relative', zIndex: 1 }} />
+                  <Image src="/icons/security.png" alt="Security Icon" width={24} height={24} style={{ height: 'auto', objectFit: 'contain', position: 'relative', zIndex: 1 }} />
                 </div>
               </div>
 
@@ -184,7 +184,7 @@ export default function LandingPage() {
               <div style={{ position: 'relative', width: '48px', height: '48px' }}>
                 <div style={{ content: '""', position: 'absolute', inset: 0, borderRadius: '50%', padding: '1px', border: '1px solid transparent', background: 'linear-gradient(to right, #6D19B0, #B900A3) border-box', WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', zIndex: -1 }}></div>
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Image src="/icons/support.png" alt="Support Icon" width={24} height={24} style={{ objectFit: 'contain', position: 'relative', zIndex: 1 }} />
+                  <Image src="/icons/support.png" alt="Support Icon" width={24} height={24} style={{ height: 'auto', objectFit: 'contain', position: 'relative', zIndex: 1 }} />
                 </div>
               </div>
 
@@ -237,7 +237,7 @@ export default function LandingPage() {
                       </div>
 
                       <button type="button" aria-label="Simpan ke favorit (perlu masuk)" onClick={() => { router.push('/login'); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                        <Image src="/icons/save.png" alt="Save" width={20} height={20} style={{ objectFit: 'contain' }} />
+                        <Image src="/icons/save.png" alt="Save" width={20} height={20} style={{ height: 'auto', objectFit: 'contain' }} />
                       </button>
                     </div>
 
@@ -251,12 +251,12 @@ export default function LandingPage() {
 
                       <div style={{ fontSize: '10px', color: '#d1d5db', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Image src="/icons/kategori.png" alt="Kategori" width={12} height={12} style={{ objectFit: 'contain' }} />
+                          <Image src="/icons/kategori.png" alt="Kategori" width={12} height={12} style={{ height: 'auto', objectFit: 'contain' }} />
                           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{concert.genres}</span>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Image src="/icons/loc.png" alt="Lokasi" width={12} height={12} style={{ objectFit: 'contain' }} />
+                          <Image src="/icons/loc.png" alt="Lokasi" width={12} height={12} style={{ height: 'auto', objectFit: 'contain' }} />
                           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{concert.location}</span>
                         </div>
                       </div>
@@ -278,7 +278,7 @@ export default function LandingPage() {
             </div>
 
             <button type="button" onClick={scrollRow} aria-label="Geser daftar konser" style={{ position: 'absolute', right: '-18px', width: '38px', height: '38px', borderRadius: '50%', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, background: 'transparent', padding: 0 }}>
-              <Image src="/icons/next.png" alt="Next" width={38} height={38} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/next.png" alt="Next" width={38} height={38} style={{ height: 'auto', objectFit: 'contain' }} />
             </button>
           </div>
         </section>
@@ -317,7 +317,7 @@ export default function LandingPage() {
                       </div>
 
                       <button type="button" aria-label="Simpan ke favorit (perlu masuk)" onClick={() => { router.push('/login'); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                        <Image src="/icons/save.png" alt="Save" width={20} height={20} style={{ objectFit: 'contain' }} />
+                        <Image src="/icons/save.png" alt="Save" width={20} height={20} style={{ height: 'auto', objectFit: 'contain' }} />
                       </button>
                     </div>
 
@@ -331,12 +331,12 @@ export default function LandingPage() {
 
                       <div style={{ fontSize: '10px', color: '#d1d5db', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Image src="/icons/kategori.png" alt="Kategori" width={12} height={12} style={{ objectFit: 'contain' }} />
+                          <Image src="/icons/kategori.png" alt="Kategori" width={12} height={12} style={{ height: 'auto', objectFit: 'contain' }} />
                           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{concert.genres}</span>
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Image src="/icons/loc.png" alt="Lokasi" width={12} height={12} style={{ objectFit: 'contain' }} />
+                          <Image src="/icons/loc.png" alt="Lokasi" width={12} height={12} style={{ height: 'auto', objectFit: 'contain' }} />
                           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{concert.location}</span>
                         </div>
                       </div>
@@ -379,7 +379,7 @@ export default function LandingPage() {
             </div>
 
             <div style={{ position: 'relative', width: '320px', height: '160px', flexShrink: 0, zIndex: 1 }}>
-              <Image src="/icons/diskon.png" alt="Promo Diskon" fill style={{ objectFit: 'contain' }} />
+              <Image src="/icons/diskon.png" alt="Promo Diskon" fill sizes="320px" style={{ objectFit: 'contain' }} />
             </div>
           </div>
         </section>
@@ -396,7 +396,7 @@ export default function LandingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px' }}>
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Image src="/icons/tiketresmi.png" alt="Tiket Resmi" width={100} height={100} style={{ objectFit: 'contain' }} />
+                <Image src="/icons/tiketresmi.png" alt="Tiket Resmi" width={100} height={66} style={{ height: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Tiket Resmi</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Langsung dari penyelenggara</p>
@@ -404,7 +404,7 @@ export default function LandingPage() {
 
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Image src="/icons/eksklusif.png" alt="Promo Eksklusif" width={120} height={120} style={{ objectFit: 'contain' }} />
+                <Image src="/icons/eksklusif.png" alt="Promo Eksklusif" width={120} height={98} style={{ height: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Promo Eksklusif</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Dapatkan harga spesial yang tidak tersedia ditempat lain</p>
@@ -412,7 +412,7 @@ export default function LandingPage() {
 
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Image src="/icons/pembayaran.png" alt="Pembayaran Aman" width={100} height={100} style={{ objectFit: 'contain' }} />
+                <Image src="/icons/pembayaran.png" alt="Pembayaran Aman" width={100} height={94} style={{ height: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Pembayaran Aman</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Sistem pembayaran terenkripsi & terverifikasi</p>
@@ -420,7 +420,7 @@ export default function LandingPage() {
 
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Image src="/icons/tiketpraktis.png" alt="E-Tiket Praktis" width={100} height={100} style={{ objectFit: 'contain' }} />
+                <Image src="/icons/tiketpraktis.png" alt="E-Tiket Praktis" width={100} height={66} style={{ height: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>E-Tiket Praktis</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tiket digital langsung masuk ke email kamu tanpa antre</p>
@@ -428,7 +428,7 @@ export default function LandingPage() {
 
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Image src="/icons/pengembalian.png" alt="Pengembalian Mudah" width={100} height={100} style={{ objectFit: 'contain' }} />
+                <Image src="/icons/pengembalian.png" alt="Pengembalian Mudah" width={100} height={66} style={{ height: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Pengembalian Mudah</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Proses pengembalian cepat jika event dibatalkan</p>
@@ -436,7 +436,7 @@ export default function LandingPage() {
 
             <div style={{ backgroundColor: '#080612', border: '1px solid rgba(129, 56, 232, 0.4)', borderRadius: '16px', padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Image src="/icons/pelayanan.png" alt="Pelayanan" width={100} height={100} style={{ objectFit: 'contain' }} />
+                <Image src="/icons/pelayanan.png" alt="Pelayanan" width={100} height={66} style={{ height: 'auto', objectFit: 'contain' }} />
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', margin: '0 0 8px 0', minHeight: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Pelayanan</h3>
               <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Tim kami siap membantu 24/7</p>
@@ -465,7 +465,7 @@ export default function LandingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image src="/icons/mencari.png" alt="Mencari Konser" width={46} height={46} style={{ objectFit: 'contain' }} />
+                  <Image src="/icons/mencari.png" alt="Mencari Konser" width={46} height={45} style={{ height: 'auto', objectFit: 'contain' }} />
                 </div>
                 <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 1 </span>
               </div>
@@ -473,13 +473,13 @@ export default function LandingPage() {
             </div>
 
             <div style={{ marginBottom: '28px' }}>
-              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={65} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image src="/icons/memilih.png" alt="Memilih Tiket" width={46} height={46} style={{ objectFit: 'contain' }} />
+                  <Image src="/icons/memilih.png" alt="Memilih Tiket" width={46} height={38} style={{ height: 'auto', objectFit: 'contain' }} />
                 </div>
                 <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 2 </span>
               </div>
@@ -487,13 +487,13 @@ export default function LandingPage() {
             </div>
 
             <div style={{ marginBottom: '28px' }}>
-              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={65} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image src="/icons/bayar.png" alt="Lakukan Pembayaran" width={46} height={46} style={{ objectFit: 'contain' }} />
+                  <Image src="/icons/bayar.png" alt="Lakukan Pembayaran" width={46} height={41} style={{ height: 'auto', objectFit: 'contain' }} />
                 </div>
                 <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 3 </span>
               </div>
@@ -501,13 +501,13 @@ export default function LandingPage() {
             </div>
 
             <div style={{ marginBottom: '28px' }}>
-              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={65} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image src="/icons/e-tik.png" alt="Dapatkan E-Tiket" width={46} height={46} style={{ objectFit: 'contain' }} />
+                  <Image src="/icons/e-tik.png" alt="Dapatkan E-Tiket" width={46} height={37} style={{ height: 'auto', objectFit: 'contain' }} />
                 </div>
                 <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 4 </span>
               </div>
@@ -515,13 +515,13 @@ export default function LandingPage() {
             </div>
 
             <div style={{ marginBottom: '28px' }}>
-              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={24} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/arrows.png" alt="Arrow" width={65} height={65} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: '82px', height: '82px', borderRadius: '50%', padding: '2px', background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#07050e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image src="/icons/nikmati.png" alt="Nikmati Konser!" width={46} height={46} style={{ objectFit: 'contain' }} />
+                  <Image src="/icons/nikmati.png" alt="Nikmati Konser!" width={46} height={37} style={{ height: 'auto', objectFit: 'contain' }} />
                 </div>
                 <span style={{ position: 'absolute', bottom: '-10px', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#DEB4E6', color: '#1a092b', fontSize: '13px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 5 </span>
               </div>
@@ -534,7 +534,7 @@ export default function LandingPage() {
         <div style={{ position: 'relative', borderRadius: '16px', border: '1px solid #231238', background: 'linear-gradient(135deg, #130321 0%, #08010f 100%)', padding: '32px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '80px', gap: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ width: '64px', height: '64px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Image src="/icons/mic.png" alt="Mic Icon" width={64} height={64} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/mic.png" alt="Mic Icon" width={64} height={96} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div>
@@ -557,11 +557,11 @@ export default function LandingPage() {
 
           <div id="faq" style={{ position: 'relative', marginBottom: '100px', scrollMarginTop: '20px' }}>
             <div style={{ position: 'absolute', left: '-62px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>
-              <Image src="/icons/bintang.png" alt="Decoration Left" width={230} height={230} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/bintang.png" alt="Decoration Left" width={230} height={176} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div style={{ position: 'absolute', right: '-60px', top: '70%', transform: 'translateY(-50%)', opacity: 0.6 }}>
-              <Image src="/icons/bintang.png" alt="Decoration Right" width={230} height={230} style={{ objectFit: 'contain' }} />
+              <Image src="/icons/bintang.png" alt="Decoration Right" width={230} height={176} style={{ height: 'auto', objectFit: 'contain' }} />
             </div>
 
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -599,7 +599,7 @@ export default function LandingPage() {
 
             <footer className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.2fr', gap: '150px', alignItems: 'start', backgroundColor: '#000000', color: '#ffffff', paddingTop: '5px', paddingBottom: '0px', margin:'0px' }}> <div>
               <div style={{ marginBottom: '-25px', marginLeft: '-50px', marginTop: '-74px' }}>
-                <Image src="/icons/logo.png" alt="ShowTime Logo" width={300} height={300} style={{ objectFit: 'contain', display: 'block' }} />
+                <Image src="/icons/logo.png" alt="ShowTime Logo" width={230} height={154} style={{ width: 230, maxWidth: 'none', height: 'auto', objectFit: 'contain', display: 'block' }} />
               </div>
 
                 <p style={{ fontSize: '16px', color: '#ffffff', lineHeight: '1.4', margin: 0, maxWidth: '210px', marginTop: '-50px', marginLeft: '-20px'}}>

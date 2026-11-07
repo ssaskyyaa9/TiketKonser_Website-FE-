@@ -17,6 +17,7 @@ export default async function AccountPage() {
   const { status, data } = await callBackend("/api/auth/me", { token });
   if (status === 401 || status === 403) redirect("/api/auth/expired");
   const user = status === 200 ? data?.user : null;
+  if (user?.role === "customer") redirect("/beranda");
 
   return (
     <main className="mx-auto w-full max-w-[640px] px-5 py-10">
