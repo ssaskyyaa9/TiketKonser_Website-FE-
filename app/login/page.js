@@ -1,142 +1,103 @@
-"use client";
+'use client';
 
-import { Suspense, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Check, Mail } from "lucide-react";
-import AuthLayout from "@/components/auth/AuthLayout";
-import PasswordInput from "@/components/auth/PasswordInput";
-import Alert from "@/components/ui/Alert";
-import Button from "@/components/ui/Button";
-import { Input } from "@/components/ui/Field";
-import { login } from "@/lib/api";
-import { safeNext } from "@/lib/session";
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function LoginForm() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const emailRef = useRef(null);
-  const passRef = useRef(null);
-  const [values, setValues] = useState({ email: "", password: "", remember: true });
-  const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const expired = params.get("expired") === "1";
-
-  const set = (key) => (e) => {
-    const v = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    setValues((p) => ({ ...p, [key]: v }));
-    setErrors((p) => (p[key] ? { ...p, [key]: undefined } : p));
-  };
-
-  const checkEmail = () =>
-    !values.email.trim() ? "Email wajib diisi." : !EMAIL_RE.test(values.email.trim()) ? "Format email belum benar. Contoh: nama@email.com." : undefined;
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if (busy) return;
-    setFormError("");
-    const found = { email: checkEmail(), password: values.password ? undefined : "Kata sandi wajib diisi." };
-    setErrors(found);
-    if (found.email) return emailRef.current?.focus();
-    if (found.password) return passRef.current?.focus();
-
-    setBusy(true);
-    try {
-      await login(values.email.trim(), values.password, values.remember);
-      router.replace(safeNext(params.get("next")));
-      router.refresh();
-    } catch (err) {
-      setFormError(err.message);
-      setValues((p) => ({ ...p, password: "" }));
-      passRef.current?.focus();
-      setBusy(false);
-    }
-  };
-
-  return (
-    <AuthLayout
-      title="Masuk"
-      subtitle="Lanjutkan ke akun ShowTime kamu."
-      footer={
-        <>
-          Belum punya akun?{" "}
-          <Link href="/registrasi" className="inline-block py-1 font-semibold brand-text">
-            Daftar gratis
-          </Link>
-        </>
-      }
-    >
-      <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-        {expired ? <Alert tone="warn" title="Sesi berakhir">Masuk lagi untuk melanjutkan.</Alert> : null}
-        {formError ? <Alert tone="danger" title="Belum bisa masuk">{formError}</Alert> : null}
-
-        <Input
-          ref={emailRef}
-          id="login-email"
-          name="email"
-          type="email"
-          label="Email"
-          icon={Mail}
-          autoComplete="username"
-          inputMode="email"
-          autoCapitalize="none"
-          spellCheck={false}
-          autoFocus
-          placeholder="nama@email.com"
-          value={values.email}
-          onChange={set("email")}
-          onBlur={() => values.email && setErrors((p) => ({ ...p, email: checkEmail() }))}
-          error={errors.email}
-        />
-
-        <PasswordInput
-          ref={passRef}
-          id="login-password"
-          name="password"
-          label="Kata sandi"
-          autoComplete="current-password"
-          placeholder="Kata sandi kamu"
-          value={values.password}
-          onChange={set("password")}
-          error={errors.password}
-          aside={
-            <button type="button" className="auth__quiet" aria-expanded={helpOpen} aria-controls="help-reset" onClick={() => setHelpOpen((v) => !v)}>
-              Lupa kata sandi?
-            </button>
-          }
-        />
-
-        {helpOpen ? (
-          <div id="help-reset">
-            <Alert tone="info" title="Atur ulang kata sandi">
-              Pengaturan ulang mandiri belum tersedia. Kirim email dari alamat akunmu ke{" "}
-              <a href="mailto:help@showtime.id" className="inline-block py-1 font-semibold brand-text">help@showtime.id</a>, tim kami bantu.
-            </Alert>
-          </div>
-        ) : null}
-
-        <label className="check">
-          <input type="checkbox" checked={values.remember} onChange={set("remember")} />
-          <span className="check__box" aria-hidden="true"><Check size={13} strokeWidth={3} /></span>
-          <span>Ingat saya di perangkat ini (7 hari)</span>
-        </label>
-
-        <Button type="submit" variant="primary" size="lg" block loading={busy} iconRight={ArrowRight}>
-          {busy ? "Memeriksa..." : "Masuk"}
-        </Button>
-      </form>
-    </AuthLayout>
-  );
-}
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
+    <div className="relative h-screen w-screen bg-[#030205] text-white flex items-center justify-center p-4 overflow-hidden font-sans select-none">
+      <div className="absolute inset-0 z-0">
+        <Image src="/icons/bg.png" alt="Concert Background" fill priority className="object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/60 pointer-events-none"></div>
+      </div>
+
+      <div className="absolute top-6 left-6 z-20">
+        <Link href="/registrasi" className="block transition-transform hover:scale-105 active:scale-95 focus:outline-none" >
+          <Image src="/icons/previous.png" alt="Kembali ke Registrasi" width={48} height={48} className="w-10 h-10 md:w-12 md:h-12 object-contain" />
+        </Link>
+      </div>
+
+      <div className="relative z-10 w-[92%] max-w-[440px] bg-black/85 rounded-2xl border border-white/60 p-6 md:p-8 shadow-2xl">
+        <div className="text-center mb-7">
+          <h1 className="text-2xl md:text-3xl font-bold inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent mb-2">
+            Masuk Akun
+          </h1>
+
+          <p className="text-sm text-gray-300">
+            Belum punya akun?{' '}
+            <button type="button" onClick={() => router.push('/registrasi')}
+              className="inline-block bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] bg-clip-text text-transparent hover:opacity-80 font-medium transition-opacity cursor-pointer border-none p-0" >
+              Daftar di sini
+            </button>
+          </p>
+        </div>
+
+        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}> 
+          <div className="relative flex items-center">
+            <div className="absolute left-4 flex items-center justify-center w-5 h-5">
+              <Image src="/icons/email.png" alt="Email Icon" width={20} height={20} className="object-contain" />
+            </div>
+
+            <input type="email" placeholder="Email"
+              className="w-full bg-transparent border border-white/60 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
+            />
+          </div>
+
+          <div className="relative flex items-center">
+            <div className="absolute left-4 flex items-center justify-center w-5 h-5">
+              <Image src="/icons/telephone.png" alt="Telephone Icon" width={20} height={20} className="object-contain" />
+            </div>
+
+            <input type="tel" placeholder="Nomor Telepon"
+              className="w-full bg-transparent border border-white/60 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
+            />
+          </div>
+
+          <div>
+            <div className="relative flex items-center">
+              <div className="absolute left-4 flex items-center justify-center w-5 h-5">
+                <Image src="/icons/padlock.png" alt="Password Icon" width={20} height={20} className="object-contain" />
+              </div>
+
+              <input type={showPassword ? "text" : "password"} placeholder="Kata Sandi"
+                className="w-full bg-transparent border border-white/60 rounded-xl py-3.5 pl-12 pr-11 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#F73BE1] transition-all"
+              />
+
+              <button type="button" onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 text-gray-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12c1.274 4.057 5.065 7 9.542 7 4.477 0 8.268-2.943 9.542-7-1.274-4.057-5.064-7-9.542-7-4.477 0-8.268 2.943-9.542 7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            
+            <div className="flex justify-end mt-1.5">
+              <button type="button" className="text-xs text-gray-400 hover:text-[#F73BE1] transition-colors focus:outline-none" >
+                Lupa Kata Sandi?
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <button type="submit" className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#8138E8] to-[#F73BE1] text-white font-semibold text-sm md:text-base shadow-lg hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer" >
+              Masuk Sekarang
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
