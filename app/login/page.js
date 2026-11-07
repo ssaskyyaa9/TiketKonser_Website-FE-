@@ -64,7 +64,7 @@ function LoginForm() {
       footer={
         <>
           Belum punya akun?{" "}
-          <Link href="/registrasi" className="auth__link">
+          <Link href="/registrasi" className="font-semibold brand-text">
             Daftar gratis
           </Link>
         </>
@@ -114,7 +114,7 @@ function LoginForm() {
           <div id="help-reset">
             <Alert tone="info" title="Atur ulang kata sandi">
               Pengaturan ulang mandiri belum tersedia. Kirim email dari alamat akunmu ke{" "}
-              <a href="mailto:help@showtime.id" className="auth__link">help@showtime.id</a>, tim kami bantu.
+              <a href="mailto:help@showtime.id" className="font-semibold brand-text">help@showtime.id</a>, tim kami bantu.
             </Alert>
           </div>
         ) : null}

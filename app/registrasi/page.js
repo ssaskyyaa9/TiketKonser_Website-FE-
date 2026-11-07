@@ -147,7 +147,7 @@ export default function RegisterPage() {
       footer={
         <>
           Sudah punya akun?{" "}
-          <Link href="/login" className="auth__link">
+          <Link href="/login" className="font-semibold brand-text">
             Masuk
           </Link>
         </>

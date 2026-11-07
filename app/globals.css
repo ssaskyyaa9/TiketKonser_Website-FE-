@@ -661,3 +661,8 @@ textarea::placeholder {
 .steps { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--fg-muted); }
 .steps__bar { flex: 1; height: 3px; border-radius: 2px; background: var(--track); overflow: hidden; }
 .steps__bar > span { display: block; height: 100%; background: var(--violet-500); transition: width 0.25s ease; }
+
+/* Baris konser landing: bisa digeser, scrollbar disembunyikan */
+.row-scroll { scrollbar-width: none; }
+.row-scroll::-webkit-scrollbar { display: none; }
+.row-scroll > * { scroll-snap-align: start; }
