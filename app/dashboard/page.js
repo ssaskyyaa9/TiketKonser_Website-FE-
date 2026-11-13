@@ -17,9 +17,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use(
@@ -49,9 +47,25 @@ export default function CustomerDashboard() {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedPriceFilter, setSelectedPriceFilter] = useState(null);
-
   const recommendedScrollRef = useRef(null);
   const trendingScrollRef = useRef(null);
+
+  // State untuk Countdown Timer Flash Sale (2 jam 15 menit 30 detik)
+  const [timeLeft, setTimeLeft] = useState(2 * 3600 + 15 * 60 + 30);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatCountdown = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
 
   const scrollSlider = (ref, direction) => {
     if (ref.current) {
@@ -94,6 +108,10 @@ export default function CustomerDashboard() {
   const recentOrders = dashboardData?.recentOrders || [];
   const publishedConcerts = dashboardData?.publishedConcerts || [];
 
+  const wishlistCount = !wishlistLoading && Array.isArray(wishlistConcertIds)
+    ? wishlistConcertIds.length
+    : stats.wishlist;
+
   const availableLocations = useMemo(() => {
     const locations = publishedConcerts
       .map((c) => c.venue?.city || c.venue?.name || c.venueName)
@@ -111,17 +129,18 @@ export default function CustomerDashboard() {
         const q = searchQuery.toLowerCase();
         const matchName = concert.name?.toLowerCase().includes(q);
         const matchOrg = concert.organizer?.name?.toLowerCase().includes(q);
-        if (!matchName && !matchOrg) return false;
+        const matchCat = concert.category?.toLowerCase().includes(q);
+        const matchVenue = (concert.venue?.name || concert.venue?.city || concert.venueName || '')
+          .toLowerCase()
+          .includes(q);
+        if (!matchName && !matchOrg && !matchCat && !matchVenue) return false;
       }
 
       if (selectedLocation !== '') {
-        const loc = (
-          concert.venue?.city ||
-          concert.venue?.name ||
-          concert.venueName ||
-          ''
-        ).toLowerCase();
-        if (!loc.includes(selectedLocation.toLowerCase())) return false;
+        const city = (concert.venue?.city || '').toLowerCase();
+        const venueName = (concert.venue?.name || concert.venueName || '').toLowerCase();
+        const target = selectedLocation.toLowerCase();
+        if (!city.includes(target) && !venueName.includes(target)) return false;
       }
 
       if (selectedDate !== '') {
@@ -132,7 +151,7 @@ export default function CustomerDashboard() {
 
       if (selectedPriceFilter) {
         const price = Number(concert.minPrice || 0);
-        if (selectedPriceFilter === 'under_250k' && price >= 250000) return false;
+        if (selectedPriceFilter === 'under_250k' && price > 250000) return false;
         if (selectedPriceFilter === 'over_250k' && price <= 250000) return false;
         if (selectedPriceFilter === 'over_500k' && price <= 500000) return false;
         if (selectedPriceFilter === 'over_1m' && price <= 1000000) return false;
@@ -147,6 +166,10 @@ export default function CustomerDashboard() {
     selectedDate,
     selectedPriceFilter,
   ]);
+
+  const hasActiveFilters = Boolean(
+    searchQuery.trim() !== '' || selectedLocation !== '' || selectedDate !== '' || selectedPriceFilter
+  );
 
   const handleClaimPromo = () => {
     toast.success('Promo diskon hingga 30% berhasil diklaim!');
@@ -166,9 +189,7 @@ export default function CustomerDashboard() {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) { return null; }
 
   return (
     <div className="min-h-screen bg-[#04000E] text-white selection:bg-[#B102A4] selection:text-white overflow-x-hidden">
@@ -199,11 +220,8 @@ export default function CustomerDashboard() {
           border: 1px solid rgba(250, 47, 132, 0.6);
         }
       `}</style>
-
-      {/* Navbar */}
       <Navbar />
 
-      {/* Main Container diberi jarak padding top (pt-28 / pt-32) agar tidak tertutup navbar atas */}
       <section className="relative overflow-hidden bg-[#04000E] pt-8 sm:pt-12">
         <div className="absolute inset-0 z-0">
           <Image src="/icons/bground.png" alt="Background Concert" fill priority className="object-cover object-center" />
@@ -240,7 +258,7 @@ export default function CustomerDashboard() {
                 <img src="/icons/save.png" alt="Disimpan" className="w-4 h-4 object-contain" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold text-white"> {stats.wishlist} </span>
+                <span className="text-lg font-bold text-white"> {wishlistCount} </span>
                 <span className="text-xs text-white/85">Disimpan</span>
               </div>
             </Link>
@@ -320,8 +338,7 @@ export default function CustomerDashboard() {
                             : undefined
                         }
                       >
-                        <span
-                          className={`w-full h-full flex items-center justify-center rounded-[10px] px-2 ${
+                        <span className={`w-full h-full flex items-center justify-center rounded-[10px] px-2 ${
                             isSelected ? 'bg-[#04000E] text-white font-semibold' : ''
                           }`}
                         >
@@ -341,11 +358,8 @@ export default function CustomerDashboard() {
                     Promo Spesial
                   </p>
                   <h2 className="text-sm sm:text-base font-bold text-white leading-snug"> Diskon Hingga </h2>
-                  <p
-                    className="text-2xl sm:text-3xl font-extrabold bg-clip-text text-transparent my-0.5"
-                    style={{ backgroundImage: 'linear-gradient(90deg, #C332D2 0%, #AB47DF 100%)' }}
-                  >
-                    30%
+                  <p className="text-2xl sm:text-3xl font-extrabold bg-clip-text text-transparent my-0.5"
+                    style={{ backgroundImage: 'linear-gradient(90deg, #C332D2 0%, #AB47DF 100%)' }} > 30%
                   </p>
                   <button type="button" onClick={handleClaimPromo}
                     className="mt-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow"
@@ -410,11 +424,9 @@ export default function CustomerDashboard() {
                   <div className="py-0.5">
                     <p className="text-xs sm:text-sm font-semibold text-white/95"> Belum ada tiket? </p>
                     <p className="text-[11px] text-white/60 mt-0.5 mb-3"> Yuk, cari konser favoritmu dan pesan sekarang </p>
-                    <Link
-                      href="/concerts"
+                    <Link href="/concerts"
                       className="inline-block px-5 py-2 rounded-lg text-xs font-semibold text-white hover:opacity-90 transition-opacity shadow"
-                      style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)' }}
-                    >
+                      style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)' }} >
                       Cari Konser
                     </Link>
                   </div>
@@ -425,42 +437,26 @@ export default function CustomerDashboard() {
         </div>
       </section>
 
-      {/* SECTION 1: KONSER REKOMENDASI */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
-            <span
-              className="w-1.5 h-6 rounded-full inline-block"
-              style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }}
-            />
-            <h2
-              className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent"
-              style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }}
-            >
+            <span className="w-1.5 h-6 rounded-full inline-block" style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }} />
+            <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }} >
               Konser Rekomendasi
             </h2>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              href="/concerts"
-              className="text-xs sm:text-sm hover:underline transition-colors"
-              style={{ color: '#B003A4' }}
-            >
+            <Link href="/concerts" className="text-xs sm:text-sm hover:underline transition-colors" style={{ color: '#B003A4' }} >
               Lihat semua →
             </Link>
           </div>
         </div>
-        <p className="text-xs sm:text-sm text-white/60 mb-4">
-          Deretan konser megah siap manjakan telinga kamu.
-        </p>
+        <p className="text-xs sm:text-sm text-white/60 mb-4"> Deretan konser megah siap manjakan telinga kamu. </p>
 
         <div className="relative group/slider">
-          <div
-            ref={recommendedScrollRef}
-            className="flex gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth"
-          >
-            {publishedConcerts.length > 0 ? (
-              publishedConcerts.map((concert) => {
+          <div ref={recommendedScrollRef} className="flex gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth" >
+            {filteredConcerts.length > 0 ? (
+              filteredConcerts.map((concert) => {
                 const isWishlisted = wishlistConcertIds.includes(Number(concert.id));
                 const isWishlistBusy = wishlistBusyConcertIds.includes(Number(concert.id));
                 const poster =
@@ -469,19 +465,10 @@ export default function CustomerDashboard() {
                 const concertDate = concert.date ? new Date(concert.date) : null;
 
                 return (
-                  <div
-                    key={concert.id}
-                    className="concert-card relative shrink-0 w-[215px] sm:w-[235px] h-[420px] rounded-[20px] overflow-hidden bg-[#120f1d] flex flex-col justify-between p-[18px] shadow-xl"
-                  >
+                  <div key={concert.id} className="concert-card relative shrink-0 w-[215px] sm:w-[225px] lg:w-[calc((100%-64px)/5)] h-[420px] rounded-[20px] overflow-hidden bg-[#120f1d] flex flex-col justify-between p-[16px] shadow-xl" >
                     <div className="absolute inset-0 z-0">
                       {poster ? (
-                        <Image
-                          src={poster}
-                          alt={concert.name}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
+                        <Image src={poster} alt={concert.name} fill unoptimized className="object-cover" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-5xl bg-[#1a0b36]">
                           🎵
@@ -502,28 +489,19 @@ export default function CustomerDashboard() {
                         </div>
                       )}
 
-                      <button
-                        type="button"
-                        disabled={authLoading || wishlistLoading || isWishlistBusy}
+                      <button type="button" disabled={authLoading || wishlistLoading || isWishlistBusy}
                         onClick={() => toggleWishlist(concert.id)}
                         className="bg-transparent border-none cursor-pointer p-1 transition-all hover:opacity-80"
                         aria-label="Save wishlist"
                       >
-                        <Image
-                          src="/icons/save.png"
-                          alt="Save"
-                          width={24}
-                          height={24}
-                          style={{
-                            objectFit: 'contain',
-                            filter: isWishlisted ? 'brightness(0) invert(1)' : 'none',
-                          }}
-                        />
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill={isWishlisted ? '#FFFFFF' : 'none'} stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                        </svg>
                       </button>
                     </div>
 
                     <div className="relative z-2">
-                      <h3 className="text-[20px] font-[800] text-white m-0 leading-[1.2] line-clamp-1">
+                      <h3 className="text-[19px] font-[800] text-white m-0 leading-[1.2] line-clamp-1">
                         {concert.name}
                       </h3>
                       <p className="text-[11px] text-[#9ca3af] m-[4px_0_12px_0]">
@@ -547,13 +525,12 @@ export default function CustomerDashboard() {
                       <div className="flex items-center justify-between border-t border-white/10 pt-[12px]">
                         <div>
                           <span className="block text-[9px] text-[#9ca3af]">Mulai dari</span>
-                          <span className="text-[13px] font-bold text-white">
-                            Rp {concert.minPrice?.toLocaleString('id-ID') || '550.000'}
+                          <span className="text-[12px] font-bold text-white">
+                            Rp {concert.minPrice != null ? Number(concert.minPrice).toLocaleString('id-ID') : '550.000'}
                           </span>
                         </div>
-                        <Link
-                          href={`/concerts/${concert.id}`}
-                          className="px-[14px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
+                        <Link href={`/concerts/${concert.id}`}
+                          className="px-[12px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0"
                           style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }}
                         >
                           Beli Tiket
@@ -565,29 +542,19 @@ export default function CustomerDashboard() {
               })
             ) : (
               <div className="w-full text-center py-12 text-white/40 text-sm">
-                Tidak ada konser rekomendasi saat ini.
+                {hasActiveFilters ? 'Tidak ada konser yang sesuai dengan filter pencarian.' : 'Tidak ada konser rekomendasi saat ini.'}
               </div>
             )}
           </div>
 
-          {publishedConcerts.length > 5 && (
-            <button
-              type="button"
-              onClick={() => scrollSlider(recommendedScrollRef, 'right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer"
-              aria-label="Scroll kanan"
-            >
-              <img
-                src="/icons/next.png"
-                alt="Next"
-                className="w-4 h-4 object-contain filter invert"
-              />
+          {filteredConcerts.length > 5 && (
+            <button type="button" onClick={() => scrollSlider(recommendedScrollRef, 'right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer" aria-label="Scroll kanan" >
+              <img src="/icons/next.png" alt="Next" className="w-4 h-4 object-contain filter invert" />
             </button>
           )}
         </div>
       </section>
 
-      {/* SECTION 2: TRENDING SAAT INI */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
@@ -595,19 +562,10 @@ export default function CustomerDashboard() {
               className="w-1.5 h-6 rounded-full inline-block"
               style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }}
             />
-            <h2
-              className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent"
-              style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }}
-            >
-              Trending Saat Ini
-            </h2>
+            <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }} > Trending Saat Ini </h2>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              href="/concerts"
-              className="text-xs sm:text-sm hover:underline transition-colors"
-              style={{ color: '#B003A4' }}
-            >
+            <Link href="/concerts" className="text-xs sm:text-sm hover:underline transition-colors" style={{ color: '#B003A4' }} >
               Lihat semua →
             </Link>
           </div>
@@ -621,8 +579,8 @@ export default function CustomerDashboard() {
             ref={trendingScrollRef}
             className="flex gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth"
           >
-            {publishedConcerts.length > 0 ? (
-              publishedConcerts.map((concert) => {
+            {filteredConcerts.length > 0 ? (
+              filteredConcerts.map((concert) => {
                 const isWishlisted = wishlistConcertIds.includes(Number(concert.id));
                 const isWishlistBusy = wishlistBusyConcertIds.includes(Number(concert.id));
                 const poster =
@@ -631,19 +589,10 @@ export default function CustomerDashboard() {
                 const concertDate = concert.date ? new Date(concert.date) : null;
 
                 return (
-                  <div
-                    key={`trending-${concert.id}`}
-                    className="concert-card relative shrink-0 w-[215px] sm:w-[235px] h-[420px] rounded-[20px] overflow-hidden bg-[#120f1d] flex flex-col justify-between p-[18px] shadow-xl"
-                  >
+                  <div key={`trending-${concert.id}`} className="concert-card relative shrink-0 w-[215px] sm:w-[225px] lg:w-[calc((100%-64px)/5)] h-[420px] rounded-[20px] overflow-hidden bg-[#120f1d] flex flex-col justify-between p-[16px] shadow-xl" >
                     <div className="absolute inset-0 z-0">
                       {poster ? (
-                        <Image
-                          src={poster}
-                          alt={concert.name}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
+                        <Image src={poster} alt={concert.name} fill unoptimized className="object-cover" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-5xl bg-[#1a0b36]">
                           🎵
@@ -663,31 +612,15 @@ export default function CustomerDashboard() {
                           </span>
                         </div>
                       )}
-
-                      <button
-                        type="button"
-                        disabled={authLoading || wishlistLoading || isWishlistBusy}
-                        onClick={() => toggleWishlist(concert.id)}
-                        className="bg-transparent border-none cursor-pointer p-1 transition-all hover:opacity-80"
-                        aria-label="Save wishlist"
-                      >
-                        <Image
-                          src="/icons/save.png"
-                          alt="Save"
-                          width={24}
-                          height={24}
-                          style={{
-                            objectFit: 'contain',
-                            filter: isWishlisted ? 'brightness(0) invert(1)' : 'none',
-                          }}
-                        />
+                      <button type="button" disabled={authLoading || wishlistLoading || isWishlistBusy} onClick={() => toggleWishlist(concert.id)} className="bg-transparent border-none cursor-pointer p-1 transition-all hover:opacity-80" aria-label="Save wishlist" >
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill={isWishlisted ? '#FFFFFF' : 'none'} stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                        </svg>
                       </button>
                     </div>
 
                     <div className="relative z-2">
-                      <h3 className="text-[20px] font-[800] text-white m-0 leading-[1.2] line-clamp-1">
-                        {concert.name}
-                      </h3>
+                      <h3 className="text-[19px] font-[800] text-white m-0 leading-[1.2] line-clamp-1"> {concert.name} </h3>
                       <p className="text-[11px] text-[#9ca3af] m-[4px_0_12px_0]">
                         {concert.organizer?.name || concert.description || 'Live concert'}
                       </p>
@@ -701,7 +634,7 @@ export default function CustomerDashboard() {
                         <div className="flex items-center gap-[6px]">
                           <Image src="/icons/loc.png" alt="Lokasi" width={14} height={14} style={{ objectFit: 'contain' }} />
                           <span className="truncate">
-                            {concert.venue?.name || concert.venueName || 'Indonesia Arena, Jakarta'}
+                            {concert.venue?.name || concert.venueName || 'Indonesia'}
                           </span>
                         </div>
                       </div>
@@ -709,17 +642,9 @@ export default function CustomerDashboard() {
                       <div className="flex items-center justify-between border-t border-white/10 pt-[12px]">
                         <div>
                           <span className="block text-[9px] text-[#9ca3af]">Mulai dari</span>
-                          <span className="text-[13px] font-bold text-white">
-                            Rp {concert.minPrice?.toLocaleString('id-ID') || '550.000'}
-                          </span>
+                          <span className="text-[12px] font-bold text-white"> Rp {concert.minPrice != null ? Number(concert.minPrice).toLocaleString('id-ID') : '550.000'} </span>
                         </div>
-                        <Link
-                          href={`/concerts/${concert.id}`}
-                          className="px-[14px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
-                          style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }}
-                        >
-                          Beli Tiket
-                        </Link>
+                        <Link href={`/concerts/${concert.id}`} className="px-[12px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0" style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }} > Beli Tiket </Link>
                       </div>
                     </div>
                   </div>
@@ -727,165 +652,120 @@ export default function CustomerDashboard() {
               })
             ) : (
               <div className="w-full text-center py-12 text-white/40 text-sm">
-                Tidak ada konser trending saat ini.
+                {hasActiveFilters ? 'Tidak ada konser yang sesuai dengan filter pencarian.' : 'Tidak ada konser trending saat ini.'}
               </div>
             )}
           </div>
 
-          {publishedConcerts.length > 5 && (
-            <button
-              type="button"
-              onClick={() => scrollSlider(trendingScrollRef, 'right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer"
-              aria-label="Scroll kanan"
-            >
-              <img
-                src="/icons/next.png"
-                alt="Next"
-                className="w-4 h-4 object-contain filter invert"
-              />
+          {filteredConcerts.length > 5 && (
+            <button type="button" onClick={() => scrollSlider(trendingScrollRef, 'right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer" aria-label="Scroll kanan" >
+              <img src="/icons/next.png" alt="Next" className="w-4 h-4 object-contain filter invert" />
             </button>
           )}
         </div>
       </section>
 
-      {/* SECTION 3: KONSER DALAM WAKTU DEKAT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-3 mb-2">
-          <span
-            className="w-1.5 h-6 rounded-full inline-block"
-            style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }}
-          />
-          <h2
-            className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent"
-            style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }}
-          >
+          <span className="w-1.5 h-6 rounded-full inline-block" style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }} />
+          <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }} >
             Konser Dalam waktu dekat
           </h2>
         </div>
 
         <div className="space-y-3 mt-4">
-          {(publishedConcerts.length > 0 ? publishedConcerts.slice(0, 5) : [1, 2, 3, 4, 5]).map((item, idx) => {
-            const concert = typeof item === 'object' ? item : null;
-            const isWishlisted = concert ? wishlistConcertIds.includes(Number(concert.id)) : false;
-            const isWishlistBusy = concert ? wishlistBusyConcertIds.includes(Number(concert.id)) : false;
-            const poster = concert ? (getConcertPoster(concert.concertGalleries) || getMediaUrl(concert.thumbnail)) : null;
-            const concertDate = concert?.date ? new Date(concert.date) : null;
+          {publishedConcerts.length > 0 && filteredConcerts.length === 0 ? (
+            <div className="w-full text-center py-10 rounded-2xl bg-[#080314] border border-white/15 text-white/40 text-sm">
+              Tidak ada konser yang sesuai dengan filter pencarian.
+            </div>
+          ) : (
+            (publishedConcerts.length > 0 ? filteredConcerts.slice(0, 5) : [1, 2, 3, 4, 5]).map((item, idx) => {
+              const concert = typeof item === 'object' ? item : null;
+              const isWishlisted = concert ? wishlistConcertIds.includes(Number(concert.id)) : false;
+              const isWishlistBusy = concert ? wishlistBusyConcertIds.includes(Number(concert.id)) : false;
+              const poster = concert ? (getConcertPoster(concert.concertGalleries) || getMediaUrl(concert.thumbnail)) : null;
+              const concertDate = concert?.date ? new Date(concert.date) : null;
 
-            const concertName = concert?.name || 'Winter Sound Festival 2027';
-            const organizerName = concert?.organizer?.name || 'Live in concert';
-            const venueCity = concert?.venue?.city || concert?.venue?.name || concert?.venueName || 'Jakarta, Indonesia';
-            const venueDetail = concert?.venue?.name || 'Indonesia Arena';
-            const concertTime = concert?.date ? format(new Date(concert.date), 'HH.mm', { locale: id }) + ' WIB' : '19.00 WIB';
-            const concertPrice = concert?.minPrice ? `Rp ${concert.minPrice.toLocaleString('id-ID')}` : 'Rp 550.000';
+              const concertName = concert?.name || 'Winter Sound Festival 2027';
+              const organizerName = concert?.organizer?.name || 'Live in concert';
+              const venueCity = concert?.venue?.city || concert?.venue?.name || concert?.venueName || 'Jakarta, Indonesia';
+              const venueDetail = concert?.venue?.name || 'Indonesia Arena';
+              const concertTime = concert?.date ? format(new Date(concert.date), 'HH.mm', { locale: id }) + ' WIB' : '19.00 WIB';
+              const concertPrice = concert?.minPrice != null ? `Rp ${Number(concert.minPrice).toLocaleString('id-ID')}` : 'Rp 550.000';
 
-            return (
-              <div
-                key={`soon-${concert?.id || idx}`}
-                className="flex items-center justify-between p-3.5 rounded-2xl bg-[#080314] border border-white/15 hover:border-white/35 transition-all shadow-lg"
-              >
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="px-3.5 py-2.5 rounded-xl bg-black text-white text-center border border-white/15 shrink-0 shadow">
-                    <p className="text-sm font-bold leading-none">{concertDate ? format(concertDate, 'dd', { locale: id }) : '03'}</p>
-                    <p className="text-[10px] font-bold uppercase mt-1 tracking-wider">{concertDate ? format(concertDate, 'MMM', { locale: id }) : 'AGU'}</p>
+              return (
+                <div
+                  key={`soon-${concert?.id || idx}`}
+                  className="flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 p-3.5 rounded-2xl bg-[#080314] border border-white/15 hover:border-white/35 transition-all shadow-lg"
+                >
+                  {/* Kolom 1: Tanggal, Poster, Judul & Organizer */}
+                  <div className="md:col-span-3 flex items-center gap-3.5 min-w-0">
+                    <div className="w-[52px] py-2.5 rounded-xl bg-black text-white text-center border border-white/15 shrink-0 shadow">
+                      <p className="text-sm font-bold leading-none">{concertDate ? format(concertDate, 'dd', { locale: id }) : '03'}</p>
+                      <p className="text-[10px] font-bold uppercase mt-1 tracking-wider">{concertDate ? format(concertDate, 'MMM', { locale: id }) : 'AGU'}</p>
+                    </div>
+
+                    <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-white/10 shadow">
+                      {poster ? (
+                        <Image src={poster} alt="Poster" fill unoptimized className="object-cover" />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-lg">🎵</div>
+                      )}
+                    </div>
+
+                    <div className="min-w-0 pr-2">
+                      <h4 className="font-bold text-sm sm:text-base text-white truncate">{concertName}</h4>
+                      <p className="text-xs text-white/50 truncate mt-0.5">{organizerName}</p>
+                    </div>
                   </div>
 
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-white/10 shadow">
-                    {poster ? (
-                      <Image src={poster} alt="Poster" fill unoptimized className="object-cover" />
+                  {/* Kolom 2: Lokasi */}
+                  <div className="hidden md:flex md:col-span-3 items-center gap-2.5 text-xs text-white/80 min-w-0 pl-2">
+                    <Image src="/icons/loc.png" alt="Loc" width={16} height={16} className="object-contain opacity-85 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-white truncate">{venueCity}</p>
+                      <p className="text-[11px] text-white/50 truncate">{venueDetail}</p>
+                    </div>
+                  </div>
+
+                  {/* Kolom 3: Jam */}
+                  <div className="hidden md:flex md:col-span-2 items-center gap-2 text-xs text-white/80">
+                    <Image src="/icons/clock.png" alt="Clock" width={16} height={16} className="object-contain opacity-85 shrink-0" />
+                    <span className="text-xs font-medium">{concertTime}</span>
+                  </div>
+
+                  {/* Kolom 4: Harga, Beli Tiket & Save Wishlist */}
+                  <div className="md:col-span-4 flex items-center justify-end gap-6 lg:gap-8">
+                    <div className="text-right min-w-[95px]">
+                      <p className="text-xs sm:text-sm font-bold text-white">{concertPrice}</p>
+                    </div>
+
+                    {concert ? (
+                      <Link href={`/concerts/${concert.id}`} className="px-6 py-2.5 min-w-[115px] text-center rounded-xl text-xs font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0" style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }} > Beli Tiket </Link>
                     ) : (
-                      <div className="flex items-center justify-center h-full text-lg">🎵</div>
+                      <button type="button" className="px-6 py-2.5 min-w-[115px] text-center rounded-xl text-xs font-semibold text-white shadow-md shrink-0" style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }} > Beli Tiket </button>
                     )}
-                  </div>
 
-                  <div className="min-w-0 pr-4">
-                    <h4 className="font-bold text-sm sm:text-base text-white truncate">{concertName}</h4>
-                    <p className="text-xs text-white/50 truncate mt-0.5">{organizerName}</p>
-                  </div>
-                </div>
-
-                <div className="hidden md:flex items-center gap-2.5 text-xs text-white/80 shrink-0 px-4">
-                  <Image src="/icons/loc.png" alt="Loc" width={16} height={16} className="object-contain opacity-85 shrink-0" />
-                  <div>
-                    <p className="text-xs font-medium text-white">{venueCity}</p>
-                    <p className="text-[11px] text-white/50 truncate max-w-[180px]">{venueDetail}</p>
-                  </div>
-                </div>
-
-                <div className="hidden lg:flex items-center gap-2 text-xs text-white/80 shrink-0 px-4">
-                  <Image src="/icons/clock.png" alt="Clock" width={16} height={16} className="object-contain opacity-85 shrink-0" />
-                  <span className="text-xs font-medium">{concertTime}</span>
-                </div>
-
-                <div className="flex items-center gap-4 shrink-0">
-                  <div className="text-right">
-                    <p className="text-[10px] text-white/40 leading-none">Mulai dari</p>
-                    <p className="text-xs sm:text-sm font-bold text-white mt-1">{concertPrice}</p>
-                  </div>
-
-                  {concert ? (
-                    <Link
-                      href={`/concerts/${concert.id}`}
-                      className="px-4 py-2 rounded-xl text-xs font-semibold text-white shadow-md hover:opacity-90 transition-opacity"
-                      style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }}
-                    >
-                      Beli Tiket
-                    </Link>
-                  ) : (
-                    <button
-                      type="button"
-                      className="px-4 py-2 rounded-xl text-xs font-semibold text-white shadow-md"
-                      style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }}
-                    >
-                      Beli Tiket
+                    <button type="button" disabled={authLoading || wishlistLoading || isWishlistBusy} onClick={() => concert && toggleWishlist(concert.id)} className="transition-all hover:scale-110 cursor-pointer p-1 bg-transparent border-none shrink-0" aria-label="Save" >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill={isWishlisted ? '#FFFFFF' : 'none'} stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
                     </button>
-                  )}
-
-                  <button
-                    type="button"
-                    disabled={authLoading || wishlistLoading || isWishlistBusy}
-                    onClick={() => concert && toggleWishlist(concert.id)}
-                    className="transition-all hover:scale-110 cursor-pointer ml-1 p-1 bg-transparent border-none"
-                    aria-label="Save"
-                  >
-                    <Image
-                      src="/icons/save.png"
-                      alt="Save"
-                      width={22}
-                      height={22}
-                      style={{
-                        objectFit: 'contain',
-                        filter: isWishlisted ? 'brightness(0) invert(1)' : 'none',
-                      }}
-                    />
-                  </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </section>
 
-      {/* SECTION 4: FLASH SALE */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-3 mb-1">
-          <span
-            className="w-1.5 h-6 rounded-full inline-block"
-            style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }}
-          />
-          <h2
-            className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent"
-            style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }}
-          >
-            FLASH SALE
-          </h2>
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#B900A3] text-white uppercase tracking-wider">
-            HOT
-          </span>
+          <span className="w-1.5 h-6 rounded-full inline-block" style={{ background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)' }} />
+          <h2 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #1E3DFF 0%, #FA2F84 100%)' }} > FLASH SALE </h2>
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#B900A3] text-white uppercase tracking-wider"> HOT </span>
         </div>
-        <p className="text-xs sm:text-sm text-white/60 mb-4">
-          Penawaran waktu terbatas
-        </p>
+        <p className="text-xs sm:text-sm text-white/60 mb-4"> Penawaran waktu terbatas </p>
 
         <div className="rounded-2xl bg-[#120724] border border-[#B900A3]/40 p-6 flex flex-col sm:flex-row items-center justify-between shadow-xl">
           <div className="flex items-center gap-5 w-full sm:w-auto mb-4 sm:mb-0">
@@ -893,59 +773,36 @@ export default function CustomerDashboard() {
               <Image src="/icons/flash (1).png" alt="Flash Sale" width={32} height={32} className="object-contain" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                Flash Sale!
-              </h3>
-              <p className="text-xs text-white/70 mt-0.5">
-                Penawaran terbatas - diskon hingga 50% untuk acara-acara tertentu
-              </p>
+              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"> Flash Sale! </h3>
+              <p className="text-xs text-white/70 mt-0.5"> Penawaran terbatas - diskon hingga 50% untuk acara-acara tertentu </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
             <div className="text-right">
               <span className="text-[10px] uppercase tracking-wider text-white/50 block">Akan berakhir</span>
-              <span className="text-xl sm:text-2xl font-extrabold text-[#FA2F84] tracking-wider">02:15:30</span>
+              <span className="text-xl sm:text-2xl font-extrabold text-[#FA2F84] tracking-wider">{formatCountdown(timeLeft)}</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION RIWAYAT PESANAN TERBARU */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-4">
         <div className="rounded-2xl bg-white/[0.02] border border-white/10 p-6 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base sm:text-lg font-bold text-white">
-              Pesanan Terbaru
-            </h3>
-            <Link
-              href="/orders"
-              className="text-xs hover:underline flex items-center gap-1 font-medium"
-              style={{ color: '#B003A4' }}
-            >
-              Lihat Semua
-              <FaArrowRight className="w-3 h-3" />
-            </Link>
+            <h3 className="text-base sm:text-lg font-bold text-white"> Pesanan Terbaru </h3>
+            <Link href="/orders" className="text-xs hover:underline flex items-center gap-1 font-medium" style={{ color: '#B003A4' }} > Lihat Semua <FaArrowRight className="w-3 h-3" /> </Link>
           </div>
           {recentOrders.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {recentOrders.slice(0, 3).map((order) => (
-                <div
-                  key={order.id}
-                  className="flex items-center justify-between p-3.5 rounded-xl bg-[#04000E] border border-white/10 shadow"
-                >
+                <div key={order.id} className="flex items-center justify-between p-3.5 rounded-xl bg-[#04000E] border border-white/10 shadow" >
                   <div className="min-w-0 pr-3">
-                    <p className="text-xs sm:text-sm font-semibold text-white truncate">
-                      {order.concert?.name || 'Concert'}
-                    </p>
-                    <p className="text-[11px] text-white/40 mt-0.5">
-                      Order #{order.orderNumber || order.id}
-                    </p>
+                    <p className="text-xs sm:text-sm font-semibold text-white truncate"> {order.concert?.name || 'Concert'} </p>
+                    <p className="text-[11px] text-white/40 mt-0.5"> Order #{order.orderNumber || order.id} </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-xs sm:text-sm font-bold text-white">
-                      Rp {order.totalAmount?.toLocaleString('id-ID') || 0}
-                    </p>
+                    <p className="text-xs sm:text-sm font-bold text-white"> Rp {order.totalAmount?.toLocaleString('id-ID') || 0} </p>
                     <p className="text-[10px] text-white/40 mt-0.5">
                       {order.createdAt
                         ? format(new Date(order.createdAt), 'd MMM yyyy', {
@@ -958,13 +815,10 @@ export default function CustomerDashboard() {
               ))}
             </div>
           ) : (
-            <p className="text-white/40 text-xs text-center py-6">
-              Belum ada riwayat pesanan.
-            </p>
+            <p className="text-white/40 text-xs text-center py-6"> Belum ada riwayat pesanan. </p>
           )}
         </div>
       </section>
-
     </div>
   );
 }

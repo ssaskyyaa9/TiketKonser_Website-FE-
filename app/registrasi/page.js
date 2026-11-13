@@ -52,7 +52,7 @@ export default function RegisterCustomerPage() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center pt-12 lg:pt-0">
         <div className="lg:col-span-6 space-y-4 lg:space-y-5">
           <div>
-            <img src="/icons/logo.png" alt="Showtime Logo" className="h-9 lg:h-11 mb-3 lg:mb-4 object-contain" />
+            <img src="/icons/showtime.png" alt="Showtime Logo" className="h-9 lg:h-11 mb-3 lg:mb-4 object-contain" />
             <h1 className="text-2xl lg:text-4xl font-bold leading-tight">
               Malam penuh kenangan <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84]">

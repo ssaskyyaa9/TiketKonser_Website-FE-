@@ -76,7 +76,7 @@ export default function LandingPage() {
         <header style={{ position: 'relative', zIndex: 20, width: '100%', backgroundColor: '#030205', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0px', paddingBottom: '0px', paddingLeft: '24px', paddingRight: '24px', height: '70px', display: 'flex', alignItems: 'center' }}>
           <div style={{ maxWidth: '1280px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Image src="/icons/logo.png" alt="SHOWTIME Logo" width={250} height={250} style={{ objectFit: 'contain', cursor: 'pointer', height: 'auto', marginLeft: '-10px', marginTop: '6px' }} />
+              <Image src="/icons/showtime.png" alt="SHOWTIME Logo" width={250} height={250} style={{ objectFit: 'contain', cursor: 'pointer', height: 'auto', marginLeft: '-10px', marginTop: '6px' }} />
             </div>
 
             <nav style={{ display: 'flex', alignItems: 'center', gap: '75px', fontSize: '16px', fontWeight: 500, color: '#e5e7eb', marginLeft: '-100px'}}>
@@ -573,7 +573,7 @@ export default function LandingPage() {
 
             <footer className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.2fr', gap: '150px', alignItems: 'start', backgroundColor: '#000000', color: '#ffffff', paddingTop: '5px', paddingBottom: '0px', margin:'0px' }}> <div>
               <div style={{ marginBottom: '-25px', marginLeft: '-50px', marginTop: '-74px' }}>
-                <Image src="/icons/logo.png" alt="ShowTime Logo" width={300} height={300} style={{ objectFit: 'contain', display: 'block' }} />
+                <Image src="/icons/showtime.png" alt="ShowTime Logo" width={300} height={300} style={{ objectFit: 'contain', display: 'block' }} />
               </div>
 
                 <p style={{ fontSize: '16px', color: '#ffffff', lineHeight: '1.4', margin: 0, maxWidth: '210px', marginTop: '-50px', marginLeft: '-20px'}}>
