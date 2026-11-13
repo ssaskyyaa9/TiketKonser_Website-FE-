@@ -50,9 +50,8 @@ export default function RegisterCustomerPage() {
       </Link>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center pt-12 lg:pt-0">
-        <div className="lg:col-span-6 space-y-4 lg:space-y-5">
+        <div className="lg:col-span-6 space-y-2 lg:space-y-5 mt-9">
           <div>
-            <img src="/icons/showtime.png" alt="Showtime Logo" className="h-9 lg:h-11 mb-3 lg:mb-4 object-contain" />
             <h1 className="text-2xl lg:text-4xl font-bold leading-tight">
               Malam penuh kenangan <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84]">
@@ -97,8 +96,8 @@ export default function RegisterCustomerPage() {
             </div>
           </div>
 
-          <div className="pt-1">
-            <div className="p-[1px] rounded-2xl bg-gradient-to-r from-[#1E3DFF] to-[#F73BE1] max-w-sm">
+          <div className="pt-4">
+            <div className="p-[1px] rounded-2xl bg-gradient-to-r from-[#1E3DFF] to-[#F73BE1] w-120">
               <Link href="/registrasi/organizer" className="block w-full py-3 px-4 rounded-2xl bg-[#07050A] text-center text-xs lg:text-sm font-medium cursor-pointer hover:bg-opacity-80 transition-all" > Ingin menjadi Organizer?{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6D19B0] to-[#B900A3] font-bold"> Daftar sebagai organizer </span>
               </Link>
@@ -196,7 +195,7 @@ export default function RegisterCustomerPage() {
               )}
             </button>
 
-            <p className="text-center text-xs text-gray-400 pt-1"> Sudah punya akun?{' '}
+            <p className="text-center text-1x1 text-gray-400 pt-1"> Sudah punya akun?{' '}
               <Link href="/login" className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] font-medium hover:underline cursor-pointer"> Masuk di sini </Link>
             </p>
           </form>

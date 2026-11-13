@@ -48,17 +48,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen lg:h-screen w-full bg-[#07050A] text-white flex items-center justify-center p-4 lg:px-12 relative overflow-x-hidden select-none">
-      <Link 
-        href="/" 
-        className="absolute top-4 left-4 lg:top-6 lg:left-6 cursor-pointer hover:opacity-80 transition-opacity z-20"
-      >
+      <Link href="/registrasi" className="absolute top-4 left-4 lg:top-6 lg:left-6 cursor-pointer hover:opacity-80 transition-opacity z-20" >
         <img src="/icons/previous.png" alt="Kembali" className="w-10 h-10 lg:w-12 lg:h-12 object-contain" />
       </Link>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center pt-12 lg:pt-0">
         <div className="lg:col-span-6 space-y-4 lg:space-y-5">
           <div>
-            <img src="/icons/showtime.png" alt="Showtime Logo" className="h-9 lg:h-11 mb-3 lg:mb-4 object-contain" />
             <h1 className="text-2xl lg:text-4xl font-bold leading-tight">
               Malam penuh kenangan <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84]">
@@ -110,7 +106,7 @@ export default function LoginPage() {
                 Masuk ke akun mu
               </span>
             </h2>
-            <p className="text-gray-400 text-xs mt-1">
+            <p className="text-gray-400 text-1x1 mt-1">
               Gunakan email dan kata sandi yang di daftarkan.
             </p>
           </div>
@@ -204,7 +200,7 @@ export default function LoginPage() {
               )}
             </button>
 
-            <p className="text-center text-xs text-gray-400 pt-2">
+            <p className="text-center text-1x1 text-gray-400 pt-2">
               Belum punya akun?{' '}
               <Link href="/registrasi" className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] font-medium hover:underline cursor-pointer">
                 Daftar di sini
