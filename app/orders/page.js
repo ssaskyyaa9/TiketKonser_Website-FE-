@@ -122,26 +122,6 @@ export default function OrdersPage() {
       <Navbar />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-        
-        {/* Tombol Kembali menggunakan previous.png */}
-        <div className="mb-4">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-2.5 text-sm font-medium text-white/90 transition-colors hover:text-white"
-          >
-            <Image 
-              src="/icons/previous.png" 
-              alt="Kembali" 
-              width={30} 
-              height={30} 
-              unoptimized 
-              className="object-contain" 
-            />
-            Kembali
-          </button>
-        </div>
-
-        {/* Header Title */}
         <div className="mb-8">
           <p className="text-xs uppercase tracking-widest text-[#FA2F84] font-semibold">Riwayat</p>
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-white">Daftar Pesanan Tiket</h1>

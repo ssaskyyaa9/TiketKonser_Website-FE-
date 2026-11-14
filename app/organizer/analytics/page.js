@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import Navbar from '../../../components/navbar';
+import NavbarEO from '../../../components/navbarEO';
 import { 
   FaTicketAlt, 
   FaMoneyBillWave, 
@@ -95,7 +95,7 @@ export default function AnalyticsPage() {
       `}</style>
 
       {/* Menggunakan Navbar Atas */}
-      <Navbar />
+      <NavbarEO />
 
       <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         

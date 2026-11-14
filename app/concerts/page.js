@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from '../../../components/navbar';
-import ConcertCard from '../../../components/ConcertCard';
+import Navbar from '../../components/navbar';
+import ConcertCard from '../../components/ConcertCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 

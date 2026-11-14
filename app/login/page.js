@@ -21,7 +21,7 @@ export default function LoginPage() {
       let path = '/dashboard';
       if (user.role === 'organizer') path = '/organizer/dashboard';
       else if (user.role === 'admin') path = '/admin/dashboard';
-      else if (user.role === 'super_admin') path = '/super-admin/dashboard';
+      else if (user.role === 'super_admin') path = '/admin/dashboard';
       
       router.replace(path);
     }
@@ -208,9 +208,6 @@ export default function LoginPage() {
             </p>
           </form>
         </div>
-      </div>
-      <div className="absolute bottom-3 left-0 right-0 text-center text-[10px] text-gray-500">
-        Data kamu dipakai hanya untuk keperluan transaksi tiket dan tidak dibagikan ke pihak lain.
       </div>
     </div>
   );
