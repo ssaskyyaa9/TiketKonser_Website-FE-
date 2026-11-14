@@ -76,30 +76,37 @@ export default function AdminAnalyticsPage() {
         body { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
+      {/* Navbar Admin di Atas */}
       <NavbarAdmin />
 
-      <main className="ml-64 p-8 max-w-7xl mx-auto pt-10">
-        <div className="flex items-center justify-between mb-8 bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+      {/* Konten Utama dengan Margin/Padding yang Aman dari Navbar */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+        
+        {/* Header Banner */}
+        <div className="flex items-center justify-between mb-8 bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#A78BFA]">Platform Stats</span>
-            <h1 className="text-2xl font-extrabold text-white mt-1">Analytics</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">Analytics</h1>
             <p className="text-xs text-white/60 mt-0.5">Analisis pertumbuhan pengguna, pendapatan bulanan, dan konser terlaris.</p>
           </div>
         </div>
 
+        {/* Grid Konten Analitik */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
-            <h3 className="font-extrabold text-sm text-white mb-4">Monthly Revenue</h3>
-            <div className="space-y-3">
+          
+          {/* Monthly Revenue */}
+          <div className="bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl">
+            <h3 className="font-extrabold text-sm text-white mb-6">Monthly Revenue</h3>
+            <div className="space-y-4">
               {analytics?.monthlyRevenue?.map((item) => (
                 <div key={item.month}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-white/60">{item.month}</span>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-white/60 font-medium">{item.month}</span>
                     <span className="text-white font-bold">Rp {parseInt(item.total).toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
+                  <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-white/10">
                     <div 
-                      className="h-full rounded-full"
+                      className="h-full rounded-full transition-all duration-500"
                       style={{ 
                         background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)',
                         width: `${Math.min((parseInt(item.total) / 10000000) * 100, 100)}%` 
@@ -108,21 +115,25 @@ export default function AdminAnalyticsPage() {
                   </div>
                 </div>
               ))}
+              {!analytics?.monthlyRevenue?.length && (
+                <p className="text-xs text-white/50 text-center py-6">Belum ada data pendapatan bulanan.</p>
+              )}
             </div>
           </div>
 
-          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
-            <h3 className="font-extrabold text-sm text-white mb-4">User Growth</h3>
-            <div className="space-y-3">
+          {/* User Growth */}
+          <div className="bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl">
+            <h3 className="font-extrabold text-sm text-white mb-6">User Growth</h3>
+            <div className="space-y-4">
               {analytics?.userGrowth?.map((item) => (
                 <div key={item.month}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-white/60">{item.month}</span>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-white/60 font-medium">{item.month}</span>
                     <span className="text-white font-bold">{item.count} pengguna</span>
                   </div>
-                  <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
+                  <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden border border-white/10">
                     <div 
-                      className="h-full rounded-full"
+                      className="h-full rounded-full transition-all duration-500"
                       style={{ 
                         background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)',
                         width: `${Math.min((parseInt(item.count) / 500) * 100, 100)}%` 
@@ -131,21 +142,31 @@ export default function AdminAnalyticsPage() {
                   </div>
                 </div>
               ))}
+              {!analytics?.userGrowth?.length && (
+                <p className="text-xs text-white/50 text-center py-6">Belum ada data pertumbuhan pengguna.</p>
+              )}
             </div>
           </div>
 
-          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl md:col-span-2">
-            <h3 className="font-extrabold text-sm text-white mb-4">Konser Terlaris</h3>
+          {/* Top Concerts */}
+          <div className="bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl md:col-span-2">
+            <h3 className="font-extrabold text-sm text-white mb-6">Konser Terlaris</h3>
             <div className="space-y-3">
-              {analytics?.topConcerts?.length ? analytics.topConcerts.map((concert) => (
-                <div key={concert.id} className="flex items-center justify-between gap-4 p-3 bg-black/40 border border-white/10 rounded-xl">
-                  <span className="truncate text-white font-bold">{concert.name}</span>
-                  <span className="shrink-0 text-xs font-bold text-[#D8B4FE]">{Number(concert.ticketCount || 0).toLocaleString('id-ID')} tiket</span>
-                </div>
-              )) : <p className="text-xs text-white/50 text-center py-4">Belum ada data penjualan konser.</p>}
+              {analytics?.topConcerts?.length ? (
+                analytics.topConcerts.map((concert) => (
+                  <div key={concert.id} className="flex items-center justify-between gap-4 p-4 bg-black/40 border border-white/10 rounded-xl">
+                    <span className="truncate text-white font-bold">{concert.name}</span>
+                    <span className="shrink-0 text-xs font-extrabold text-[#D8B4FE]">{Number(concert.ticketCount || 0).toLocaleString('id-ID')} tiket</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-white/50 text-center py-6">Belum ada data penjualan konser.</p>
+              )}
             </div>
           </div>
+
         </div>
+
       </main>
     </div>
   );

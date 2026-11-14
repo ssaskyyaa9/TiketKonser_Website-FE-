@@ -119,45 +119,51 @@ export default function AdminReportsPage() {
         body { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
+      {/* Navbar Admin di Atas */}
       <NavbarAdmin />
 
-      <main className="ml-64 p-8 max-w-7xl mx-auto pt-10">
-        <div className="flex items-center justify-between mb-8 bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+      {/* Konten Utama dengan Margin/Padding yang Aman dari Navbar */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+        
+        {/* Header Banner */}
+        <div className="flex items-center justify-between mb-8 bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#A78BFA]">Platform Reports</span>
-            <h1 className="text-2xl font-extrabold text-white mt-1">Reports & Export</h1>
-            <p className="text-xs text-white/60 mt-0.5">Unduh dan lihat ringkasan laporan operasional sistem.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">Reports & Export</h1>
+            <p className="text-xs text-white/60 mt-0.5">Unduh dan lihat ringkasan laporan operasional sistem secara real-time.</p>
           </div>
         </div>
 
+        {/* Statistik Kartu Ringkasan */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 text-xs">
-          <div className="bg-[#120d1d] border border-white/15 p-5 rounded-2xl shadow-xl">
-            <p className="text-white/60">Total Pengguna</p>
-            <p className="mt-1 text-xl font-extrabold text-white">{Number(reports?.totalUsers || 0).toLocaleString('id-ID')}</p>
+          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+            <p className="text-white/60 uppercase tracking-wider font-semibold">Total Pengguna</p>
+            <p className="mt-2 text-2xl font-extrabold text-white">{Number(reports?.totalUsers || 0).toLocaleString('id-ID')}</p>
           </div>
-          <div className="bg-[#120d1d] border border-white/15 p-5 rounded-2xl shadow-xl">
-            <p className="text-white/60">Organizer</p>
-            <p className="mt-1 text-xl font-extrabold text-white">{Number(reports?.totalOrganizers || 0).toLocaleString('id-ID')}</p>
+          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+            <p className="text-white/60 uppercase tracking-wider font-semibold">Organizer</p>
+            <p className="mt-2 text-2xl font-extrabold text-white">{Number(reports?.totalOrganizers || 0).toLocaleString('id-ID')}</p>
           </div>
-          <div className="bg-[#120d1d] border border-white/15 p-5 rounded-2xl shadow-xl">
-            <p className="text-white/60">Konser</p>
-            <p className="mt-1 text-xl font-extrabold text-white">{Number(reports?.totalConcerts || 0).toLocaleString('id-ID')}</p>
+          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+            <p className="text-white/60 uppercase tracking-wider font-semibold">Konser</p>
+            <p className="mt-2 text-2xl font-extrabold text-white">{Number(reports?.totalConcerts || 0).toLocaleString('id-ID')}</p>
           </div>
-          <div className="bg-[#120d1d] border border-white/15 p-5 rounded-2xl shadow-xl">
-            <p className="text-white/60">Pendapatan Selesai</p>
-            <p className="mt-1 text-xl font-extrabold text-[#D8B4FE]">Rp {Number(reports?.totalRevenue || 0).toLocaleString('id-ID')}</p>
+          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+            <p className="text-white/60 uppercase tracking-wider font-semibold">Pendapatan Selesai</p>
+            <p className="mt-2 text-xl font-extrabold text-[#D8B4FE]">Rp {Number(reports?.totalRevenue || 0).toLocaleString('id-ID')}</p>
           </div>
         </div>
 
+        {/* Kartu Unduh Laporan */}
         <div className="grid grid-cols-1 gap-6 max-w-xl">
-          <div className="bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
-            <div className="flex items-center gap-4 mb-4">
+          <div className="bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl">
+            <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-xl bg-[#6D19B0]/20 border border-[#8B5CF6]/40 flex items-center justify-center text-white shrink-0">
                 <FaFileAlt className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="font-extrabold text-sm text-white">Sales & Payment Report</h3>
-                <p className="text-xs text-white/60 mt-0.5">Daftar transaksi, status, dan nilai pembayaran</p>
+                <p className="text-xs text-white/60 mt-0.5">Daftar transaksi lengkap, status, dan nilai pembayaran</p>
               </div>
             </div>
             <button 
@@ -180,6 +186,7 @@ export default function AdminReportsPage() {
             </button>
           </div>
         </div>
+
       </main>
     </div>
   );

@@ -26,7 +26,7 @@ export default function AdminSettingsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [settings, setSettings] = useState({
-    siteName: 'ConcertHub',
+    siteName: 'ShowTime',
     siteDescription: 'Concert Ticket Booking Platform',
     currency: 'IDR',
     emailVerification: true,

@@ -105,26 +105,31 @@ export default function AdminConcertsPage() {
         body { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
+      {/* Navbar Admin di Atas */}
       <NavbarAdmin />
 
-      <main className="ml-64 p-8 max-w-7xl mx-auto pt-10">
-        <div className="flex items-center justify-between mb-8 bg-[#120d1d] border border-white/15 p-6 rounded-2xl shadow-xl">
+      {/* Konten Utama dengan Margin/Padding yang Aman dari Navbar */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+        
+        {/* Header Banner */}
+        <div className="flex items-center justify-between mb-8 bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#A78BFA]">Event Moderation</span>
-            <h1 className="text-2xl font-extrabold text-white mt-1">Manage Konser</h1>
-            <p className="text-xs text-white/60 mt-0.5">Tinjau dan setujui event konser yang diajukan oleh organizer.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">Manage Konser</h1>
+            <p className="text-xs text-white/60 mt-0.5">Tinjau dan setujui event konser yang diajukan oleh organizer pada platform.</p>
           </div>
         </div>
 
+        {/* Tabel Data Konser */}
         <div className="bg-[#120d1d] border border-white/15 rounded-2xl overflow-hidden shadow-xl text-xs">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-left border-collapse">
               <thead className="bg-black/40 border-b border-white/10 text-white/60">
-                <tr className="text-left font-bold uppercase tracking-wider text-[10px]">
-                  <th className="px-6 py-3.5">Concert Name</th>
-                  <th className="px-6 py-3.5">Organizer</th>
-                  <th className="px-6 py-3.5">Status</th>
-                  <th className="px-6 py-3.5 text-right">Actions</th>
+                <tr className="font-bold uppercase tracking-wider text-[10px]">
+                  <th className="px-6 py-4">Concert Name</th>
+                  <th className="px-6 py-4">Organizer</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -147,14 +152,14 @@ export default function AdminConcertsPage() {
                             <>
                               <button 
                                 onClick={() => handleConcertModeration(concert.id, 'approve')} 
-                                className="px-3 py-1.5 bg-green-500/20 text-green-300 border border-green-500/30 rounded-xl text-[11px] font-bold hover:bg-green-500/30 transition-colors flex items-center gap-1.5 cursor-pointer"
+                                className="px-3.5 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded-xl text-[11px] font-bold hover:bg-green-500/30 transition-colors flex items-center gap-1.5 cursor-pointer"
                               >
                                 <FaCheckCircle className="w-3 h-3 text-white" />
                                 <span>Approve</span>
                               </button>
                               <button 
                                 onClick={() => handleConcertModeration(concert.id, 'reject')} 
-                                className="px-3 py-1.5 bg-red-500/20 text-red-300 border border-red-500/30 rounded-xl text-[11px] font-bold hover:bg-red-500/30 transition-colors flex items-center gap-1.5 cursor-pointer"
+                                className="px-3.5 py-2 bg-red-500/20 text-red-300 border border-red-500/30 rounded-xl text-[11px] font-bold hover:bg-red-500/30 transition-colors flex items-center gap-1.5 cursor-pointer"
                               >
                                 <FaTimesCircle className="w-3 h-3 text-white" />
                                 <span>Reject</span>
@@ -167,12 +172,17 @@ export default function AdminConcertsPage() {
                   );
                 })}
                 {!concerts.length && (
-                  <tr><td colSpan="4" className="px-6 py-12 text-center text-white/50">Belum ada konser yang terdaftar.</td></tr>
+                  <tr>
+                    <td colSpan="4" className="px-6 py-16 text-center text-white/50">
+                      Belum ada konser yang terdaftar.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
           </div>
         </div>
+
       </main>
     </div>
   );

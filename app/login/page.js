@@ -21,7 +21,7 @@ export default function LoginPage() {
       let path = '/dashboard';
       if (user.role === 'organizer') path = '/organizer/dashboard';
       else if (user.role === 'admin') path = '/admin/dashboard';
-      else if (user.role === 'super_admin') path = '/admin/dashboard';
+      else if (user.role === 'super_admin') path = '/super-admin/dashboard';
       
       router.replace(path);
     }
