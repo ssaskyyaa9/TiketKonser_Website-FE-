@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import NotificationBell from './notificationbell';
 
 export default function NavbarAdmin() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -124,9 +123,6 @@ export default function NavbarAdmin() {
         </div>
 
         <div className="hidden lg:flex items-center space-x-5">
-          <div className="flex items-center justify-center text-white">
-            <NotificationBell />
-          </div>
 
           {authLoading ? null : user ? (
             <div className="relative navbar-profile-dropdown">

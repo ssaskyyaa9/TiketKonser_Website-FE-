@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import NotificationBell from './notificationbell';
 
 const NavbarEO = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -182,13 +181,6 @@ const NavbarEO = () => {
         </div>
 
         <div className="hidden lg:flex items-center space-x-5">
-          <Link href="/help" className="rounded-full hover:bg-white/10 transition-colors flex items-center justify-center p-1.5" aria-label="Bantuan">
-            {icons.help}
-          </Link>
-
-          <div className="flex items-center justify-center text-white">
-            <NotificationBell />
-          </div>
 
           {authLoading ? null : user ? (
             <div className="relative navbar-profile-dropdown">
