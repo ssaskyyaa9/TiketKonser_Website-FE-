@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '../../../context/AuthContext';
 import Navbar from '../../../components/navbar';
 import Image from 'next/image';
@@ -37,17 +38,20 @@ export default function OrderDetailPage() {
       if (response.data.success) setOrder(response.data.data);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Gagal memuat detail pesanan');
-      if (error.response?.status === 404) router.push('/orders');
+      if (error.response?.status === 404) router.replace('/orders');
     } finally {
       setLoadingOrder(false);
     }
   }, [id, router]);
 
   useEffect(() => {
-    if (!loading && !user) router.push('/login');
-    if (!user || !id) return undefined;
-    const timeout = setTimeout(() => { void fetchOrder(); }, 0);
-    return () => clearTimeout(timeout);
+    if (loading) return;
+    if (!user) {
+      router.replace('/login');
+      return;
+    }
+    if (!id) return;
+    void fetchOrder();
   }, [loading, user, id, fetchOrder, router]);
 
   useEffect(() => {
@@ -191,8 +195,8 @@ export default function OrderDetailPage() {
         
         {/* Tombol Kembali */}
         <div className="mb-4">
-          <button
-            onClick={() => router.push('/orders')}
+          <Link
+            href="/orders"
             className="inline-flex items-center gap-2.5 text-sm font-medium text-white/90 transition-colors hover:text-white"
           >
             <Image 
@@ -203,8 +207,8 @@ export default function OrderDetailPage() {
               unoptimized 
               className="object-contain" 
             />
-            Kembali ke pesanan
-          </button>
+            Kembali
+          </Link>
         </div>
 
         {/* Header Order ID */}

@@ -38,8 +38,26 @@ const PRICE_FILTERS = [
   { id: 'over_1m', label: '> Rp 1.000.000' },
 ];
 
+const getUserRole = (authUser) => {
+  if (!authUser) return '';
+  return String(
+    authUser.role ||
+      authUser.userRole ||
+      authUser.user_type ||
+      authUser.type ||
+      'customer'
+  ).toLowerCase();
+};
+
 export default function CustomerDashboard() {
-  const { user, loading: authLoading, wishlistConcertIds, wishlistBusyConcertIds, wishlistLoading, toggleWishlist } = useAuth();
+  const {
+    user,
+    loading: authLoading,
+    wishlistConcertIds,
+    wishlistBusyConcertIds,
+    wishlistLoading,
+    toggleWishlist,
+  } = useAuth();
   const router = useRouter();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +67,9 @@ export default function CustomerDashboard() {
   const [selectedPriceFilter, setSelectedPriceFilter] = useState(null);
   const recommendedScrollRef = useRef(null);
   const trendingScrollRef = useRef(null);
+
+  const userRole = getUserRole(user);
+  const isCustomer = Boolean(user) && userRole === 'customer';
 
   // State untuk Countdown Timer Flash Sale (2 jam 15 menit 30 detik)
   const [timeLeft, setTimeLeft] = useState(2 * 3600 + 15 * 60 + 30);
@@ -79,14 +100,26 @@ export default function CustomerDashboard() {
   };
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
+    if (authLoading) return;
+
+    if (!user) {
+      router.replace('/login');
       return;
     }
-    if (user) {
-      fetchDashboard();
+
+    if (userRole !== 'customer') {
+      if (userRole === 'organizer' || userRole === 'eo') {
+        router.replace('/eo/dashboard');
+      } else if (userRole === 'admin') {
+        router.replace('/admin/dashboard');
+      } else {
+        router.replace('/');
+      }
+      return;
     }
-  }, [user, authLoading, router]);
+
+    fetchDashboard();
+  }, [user, userRole, authLoading, router]);
 
   const fetchDashboard = async () => {
     try {
@@ -175,7 +208,7 @@ export default function CustomerDashboard() {
     toast.success('Promo diskon hingga 30% berhasil diklaim!');
   };
 
-  if (authLoading || loading) {
+  if (authLoading || (isCustomer && loading)) {
     return (
       <div className="min-h-screen bg-[#04000E] text-white">
         <Navbar />
@@ -189,7 +222,9 @@ export default function CustomerDashboard() {
     );
   }
 
-  if (!user) { return null; }
+  if (!isCustomer) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#04000E] text-white selection:bg-[#B102A4] selection:text-white overflow-x-hidden">

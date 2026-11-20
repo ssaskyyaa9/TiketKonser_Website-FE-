@@ -1,21 +1,21 @@
 // src/app/organizer/promos/page.js
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import NavbarEO from '../../../components/navbarEO';
-import { 
-  FaPlus, 
-  FaEdit, 
-  FaTrash, 
-  FaSpinner, 
-  FaSearch, 
+import {
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaSpinner,
+  FaSearch,
   FaGift,
   FaCheckCircle,
   FaTimesCircle,
   FaTag,
-  FaTimes
+  FaTimes,
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -31,7 +31,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -40,32 +40,59 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+const INITIAL_FORM_DATA = {
+  code: '',
+  name: '',
+  description: '',
+  type: 'voucher',
+  value: '',
+  discountType: 'percentage',
+  minPurchase: '',
+  maxDiscount: '',
+  startDate: '',
+  endDate: '',
+  maxUses: '',
+  perUserLimit: '1',
+};
+
+const TYPE_LABELS = {
+  voucher: 'Voucher',
+  discount: 'Diskon',
+  flash_sale: 'Flash Sale',
+};
+
 export default function PromoPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  const [isMounted, setIsMounted] = useState(false);
   const [promos, setPromos] = useState([]);
   const [loadingPromos, setLoadingPromos] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Modal & Form State
+  // State modal & form promo
   const [showModal, setShowModal] = useState(false);
   const [editingPromo, setEditingPromo] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    code: '',
-    name: '',
-    description: '',
-    type: 'voucher',
-    value: '',
-    discountType: 'percentage',
-    minPurchase: '',
-    maxDiscount: '',
-    startDate: '',
-    endDate: '',
-    maxUses: '',
-    perUserLimit: '1'
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const fetchPromos = useCallback(async () => {
+    try {
+      setLoadingPromos(true);
+      const response = await api.get('/organizer/promos');
+      if (response.data?.success) {
+        setPromos(response.data.data || []);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Gagal memuat data promo');
+    } finally {
+      setLoadingPromos(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -77,23 +104,33 @@ export default function PromoPage() {
       return;
     }
     if (user && user.role === 'organizer') {
-      fetchPromos();
+      void fetchPromos();
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, fetchPromos]);
 
-  const fetchPromos = async () => {
-    try {
-      setLoadingPromos(true);
-      const response = await api.get('/organizer/promos');
-      if (response.data.success) {
-        setPromos(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching promos:', error);
-      toast.error('Gagal memuat promo');
-    } finally {
-      setLoadingPromos(false);
-    }
+  const openCreateModal = () => {
+    setEditingPromo(null);
+    setFormData(INITIAL_FORM_DATA);
+    setShowModal(true);
+  };
+
+  const openEditModal = (promo) => {
+    setEditingPromo(promo);
+    setFormData({
+      code: promo.code || '',
+      name: promo.name || '',
+      description: promo.description || '',
+      type: promo.type || 'voucher',
+      value: promo.value ?? '',
+      discountType: promo.discountType || 'percentage',
+      minPurchase: promo.minPurchase ?? '',
+      maxDiscount: promo.maxDiscount ?? '',
+      startDate: promo.startDate?.split('T')[0] || '',
+      endDate: promo.endDate?.split('T')[0] || '',
+      maxUses: promo.maxUses ?? '',
+      perUserLimit: promo.perUserLimit ?? '1',
+    });
+    setShowModal(true);
   };
 
   const handleSubmit = async (e) => {
@@ -102,42 +139,25 @@ export default function PromoPage() {
     try {
       const payload = {
         ...formData,
-        value: parseFloat(formData.value),
+        value: parseFloat(formData.value) || 0,
         minPurchase: formData.minPurchase ? parseFloat(formData.minPurchase) : null,
         maxDiscount: formData.maxDiscount ? parseFloat(formData.maxDiscount) : null,
-        maxUses: formData.maxUses ? parseInt(formData.maxUses) : null,
-        perUserLimit: parseInt(formData.perUserLimit)
+        maxUses: formData.maxUses ? parseInt(formData.maxUses, 10) : null,
+        perUserLimit: parseInt(formData.perUserLimit, 10) || 1,
       };
 
-      let response;
-      if (editingPromo) {
-        response = await api.put(`/organizer/promos/${editingPromo.id}`, payload);
-      } else {
-        response = await api.post('/organizer/promos', payload);
-      }
+      const response = editingPromo
+        ? await api.put(`/organizer/promos/${editingPromo.id}`, payload)
+        : await api.post('/organizer/promos', payload);
 
-      if (response.data.success) {
-        toast.success(editingPromo ? 'Promo berhasil diupdate!' : 'Promo berhasil dibuat!');
+      if (response.data?.success) {
+        toast.success(editingPromo ? 'Promo berhasil diperbarui' : 'Promo berhasil dibuat');
         setShowModal(false);
         setEditingPromo(null);
-        setFormData({ 
-          code: '', 
-          name: '', 
-          description: '', 
-          type: 'voucher', 
-          value: '', 
-          discountType: 'percentage', 
-          minPurchase: '', 
-          maxDiscount: '', 
-          startDate: '', 
-          endDate: '', 
-          maxUses: '', 
-          perUserLimit: '1' 
-        });
-        fetchPromos();
+        setFormData(INITIAL_FORM_DATA);
+        await fetchPromos();
       }
     } catch (error) {
-      console.error('Error saving promo:', error);
       toast.error(error.response?.data?.message || 'Gagal menyimpan promo');
     } finally {
       setFormLoading(false);
@@ -145,31 +165,50 @@ export default function PromoPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus promo ini?')) return;
+    if (!confirm('Apakah kamu yakin ingin menghapus promo ini?')) return;
     try {
       await api.delete(`/organizer/promos/${id}`);
-      toast.success('Promo berhasil dihapus!');
-      fetchPromos();
+      toast.success('Promo berhasil dihapus');
+      await fetchPromos();
     } catch (error) {
-      console.error('Error deleting promo:', error);
-      toast.error('Gagal menghapus promo');
+      toast.error(error.response?.data?.message || 'Gagal menghapus promo');
     }
   };
 
-  // Filter promo berdasarkan pencarian kode atau nama
-  const filteredPromos = promos.filter(promo => {
-    const code = promo.code?.toLowerCase() || '';
-    const name = promo.name?.toLowerCase() || '';
-    return code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm.toLowerCase());
-  });
+  const filteredPromos = useMemo(() => {
+    const q = searchTerm.toLowerCase();
+    return promos.filter((promo) => {
+      const code = promo.code?.toLowerCase() || '';
+      const name = promo.name?.toLowerCase() || '';
+      return code.includes(q) || name.includes(q);
+    });
+  }, [promos, searchTerm]);
 
-  if (loading || loadingPromos) {
+  const promoStats = useMemo(() => {
+    const activeCount = filteredPromos.filter((p) => p.status === 'active').length;
+    const totalUsage = filteredPromos.reduce((acc, p) => acc + Number(p.usedCount || 0), 0);
+    return {
+      total: filteredPromos.length,
+      active: activeCount,
+      usage: totalUsage,
+    };
+  }, [filteredPromos]);
+
+  if (!isMounted || loading || loadingPromos) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#07050c] text-white">
-        <style jsx global>{`::-webkit-scrollbar { display: none; } body { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+        <style jsx global>{`
+          ::-webkit-scrollbar {
+            display: none;
+          }
+          body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}</style>
         <div className="text-center">
-          <FaSpinner className="w-12 h-12 text-[#8B5CF6] animate-spin mx-auto" />
-          <p className="mt-4 text-xs text-white/60">Memuat promo...</p>
+          <FaSpinner className="w-12 h-12 text-white animate-spin mx-auto" />
+          <p className="mt-4 text-xs sm:text-sm text-white/65">Memuat data promo...</p>
         </div>
       </div>
     );
@@ -180,295 +219,351 @@ export default function PromoPage() {
   return (
     <div className="min-h-screen bg-[#07050c] text-white selection:bg-[#6D19B0]/40">
       <style jsx global>{`
-        ::-webkit-scrollbar { display: none; }
-        body { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        body {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
       `}</style>
 
-      {/* Navbar EO */}
       <NavbarEO />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
-        
         {/* Header Banner */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl mb-8">
+        <div
+          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 bg-[#120d1d] border border-white/15 p-6 sm:p-8 rounded-2xl shadow-xl mb-8 relative overflow-hidden"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at top right, rgba(185, 0, 163, 0.16), transparent 55%)',
+          }}
+        >
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#A78BFA]">Marketing & Discounts</span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-1">Promo & Vouchers</h1>
-            <p className="text-xs text-white/60 mt-1">Buat kode voucher, atur batas penggunaan, dan kelola periode promosi tiket konser.</p>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
+              Pemasaran & Diskon
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-1">
+              Promo & Voucher
+            </h1>
+            <p className="text-xs sm:text-sm text-white/60 mt-1">
+              Buat kode voucher, atur batas penggunaan, dan kelola periode promosi tiket konser.
+            </p>
           </div>
-          
-          <button 
-            onClick={() => {
-              setEditingPromo(null);
-              setFormData({ 
-                code: '', 
-                name: '', 
-                description: '', 
-                type: 'voucher', 
-                value: '', 
-                discountType: 'percentage', 
-                minPurchase: '', 
-                maxDiscount: '', 
-                startDate: '', 
-                endDate: '', 
-                maxUses: '', 
-                perUserLimit: '1' 
-              });
-              setShowModal(true);
-            }}
-            className="rounded-xl px-5 py-3 text-xs font-bold text-white shadow-lg transition hover:opacity-90 flex items-center gap-2 shrink-0 cursor-pointer"
+
+          <button
+            type="button"
+            onClick={openCreateModal}
+            className="rounded-xl px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-lg transition hover:opacity-90 flex items-center gap-2 shrink-0 cursor-pointer"
             style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)' }}
           >
             <FaPlus className="w-3.5 h-3.5 text-white" />
-            <span>Create Promo</span>
+            <span>Buat Promo</span>
           </button>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-6 max-w-md">
+        {/* Ringkasan Cepat Promo */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="bg-[#120d1d] border border-white/15 rounded-2xl p-4 flex items-center justify-between">
+            <span className="text-xs text-white/65">Total Promo Ditampilkan</span>
+            <span className="text-base font-extrabold text-white">
+              {promoStats.total.toLocaleString('id-ID')}
+            </span>
+          </div>
+          <div className="bg-[#120d1d] border border-white/15 rounded-2xl p-4 flex items-center justify-between">
+            <span className="text-xs text-white/65">Promo Aktif</span>
+            <span className="text-base font-extrabold text-white">
+              {promoStats.active.toLocaleString('id-ID')}
+            </span>
+          </div>
+          <div className="bg-[#120d1d] border border-white/15 rounded-2xl p-4 flex items-center justify-between">
+            <span className="text-xs text-white/65">Total Kali Digunakan</span>
+            <span className="text-base font-extrabold text-white">
+              {promoStats.usage.toLocaleString('id-ID')}
+            </span>
+          </div>
+        </div>
+
+        {/* Pencarian */}
+        <div className="mb-7 max-w-lg">
           <div className="relative">
-            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white w-3.5 h-3.5" />
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/65 w-3.5 h-3.5" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Cari berdasarkan kode promo atau nama..."
-              className="w-full pl-11 pr-4 py-2.5 bg-[#120d1d] border border-white/15 rounded-xl text-xs text-white placeholder-white/40 focus:border-[#8B5CF6] focus:outline-none transition-all shadow-inner"
+              suppressHydrationWarning
+              className="w-full pl-11 pr-4 py-3 bg-[#120d1d] border border-white/15 rounded-xl text-xs sm:text-sm text-white placeholder-white/40 focus:border-white/40 focus:outline-none transition-all"
             />
           </div>
         </div>
 
-        {/* Promos Grid */}
+        {/* Daftar Kartu Promo */}
         {filteredPromos.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredPromos.map((promo) => (
-              <div key={promo.id} className="bg-[#120d1d] border border-white/15 hover:border-[#8B5CF6]/60 rounded-2xl p-6 transition-all shadow-xl flex flex-col justify-between group">
-                <div>
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-black text-[#D8B4FE] tracking-wide font-mono">{promo.code}</h3>
-                      <p className="text-xs text-white/70 font-semibold mt-0.5">{promo.name}</p>
-                    </div>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border capitalize ${
-                      promo.status === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'
-                    }`}>
-                      {promo.status === 'active' ? (
-                        <span className="flex items-center gap-1"><FaCheckCircle className="w-3 h-3 text-white" /> Active</span>
-                      ) : (
-                        <span className="flex items-center gap-1"><FaTimesCircle className="w-3 h-3 text-white" /> Inactive</span>
-                      )}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-2 text-xs pt-3 border-t border-white/10">
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Type</span>
-                      <span className="capitalize font-semibold text-white">{promo.type} · {promo.discountType}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Value</span>
-                      <span className="font-extrabold text-[#D8B4FE]">
-                        {promo.discountType === 'percentage' ? `${promo.value}%` : `Rp ${Number(promo.value || 0).toLocaleString('id-ID')}`}
+            {filteredPromos.map((promo) => {
+              const isActive = promo.status === 'active';
+              const usedNum = Number(promo.usedCount || 0);
+              const maxUsesNum = promo.maxUses ? Number(promo.maxUses) : null;
+              const usagePercent = maxUsesNum
+                ? Math.min(100, Math.round((usedNum / maxUsesNum) * 100))
+                : 0;
+
+              return (
+                <div
+                  key={promo.id}
+                  className="bg-[#120d1d] border border-white/15 hover:border-white/30 rounded-2xl p-6 transition-all shadow-xl flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="min-w-0">
+                        <h2 className="text-xl font-black text-white tracking-wide font-mono truncate">
+                          {promo.code}
+                        </h2>
+                        <p className="text-xs sm:text-sm text-white/70 font-semibold mt-0.5 truncate">
+                          {promo.name}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-[11px] font-bold border shrink-0 ${
+                          isActive
+                            ? 'bg-[#6D19B0]/35 text-white border-white/20'
+                            : 'bg-white/10 text-white/65 border-white/15'
+                        }`}
+                      >
+                        {isActive ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            <FaCheckCircle className="w-3 h-3 text-white" />
+                            <span>Aktif</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5">
+                            <FaTimesCircle className="w-3 h-3 text-white" />
+                            <span>Nonaktif</span>
+                          </span>
+                        )}
                       </span>
                     </div>
-                    {promo.minPurchase && (
-                      <div className="flex justify-between">
-                        <span className="text-white/60">Min. Pembelian</span>
-                        <span className="text-white">Rp {Number(promo.minPurchase).toLocaleString('id-ID')}</span>
+
+                    <div className="space-y-2.5 text-xs sm:text-sm pt-3.5 border-t border-white/10">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-white/60">Jenis Promo</span>
+                        <span className="font-semibold text-white">
+                          {TYPE_LABELS[promo.type] || promo.type} ·{' '}
+                          {promo.discountType === 'percentage' ? 'Persentase' : 'Nominal Rupiah'}
+                        </span>
                       </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Periode</span>
-                      <span className="text-white/80">{promo.startDate?.split('T')[0]} s/d {promo.endDate?.split('T')[0]}</span>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-white/60">Nilai Potongan</span>
+                        <span className="font-extrabold text-white">
+                          {promo.discountType === 'percentage'
+                            ? `${promo.value}%`
+                            : `Rp ${Number(promo.value || 0).toLocaleString('id-ID')}`}
+                        </span>
+                      </div>
+                      {promo.minPurchase !== null &&
+                        promo.minPurchase !== undefined &&
+                        promo.minPurchase !== '' && (
+                          <div className="flex justify-between gap-3">
+                            <span className="text-white/60">Min. Pembelian</span>
+                            <span className="text-white font-medium">
+                              Rp {Number(promo.minPurchase).toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                        )}
+                      <div className="flex justify-between gap-3">
+                        <span className="text-white/60">Periode Berlaku</span>
+                        <span className="text-white/85">
+                          {promo.startDate?.split('T')[0] || '-'} s/d{' '}
+                          {promo.endDate?.split('T')[0] || '-'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-white/60">Penggunaan</span>
+                        <span className="text-white font-bold">
+                          {usedNum.toLocaleString('id-ID')} /{' '}
+                          {maxUsesNum ? maxUsesNum.toLocaleString('id-ID') : 'Tanpa Batas'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Penggunaan</span>
-                      <span className="text-yellow-300 font-bold">{promo.usedCount || 0} / {promo.maxUses || '∞'}</span>
+
+                    <div className="w-full h-2 bg-black/45 rounded-full mt-4 overflow-hidden border border-white/10">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)',
+                          width: `${usagePercent}%`,
+                        }}
+                      />
                     </div>
                   </div>
 
-                  <div className="w-full h-1.5 bg-black/40 rounded-full mt-4 overflow-hidden border border-white/10">
-                    <div 
-                      className="h-full rounded-full"
-                      style={{ 
-                        background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)',
-                        width: `${promo.maxUses ? Math.min(100, ((promo.usedCount || 0) / promo.maxUses) * 100) : 0}%` 
-                      }}
-                    />
+                  <div className="flex gap-2.5 mt-6 pt-4 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(promo)}
+                      className="flex-1 py-2.5 px-3 rounded-xl bg-black/40 border border-white/15 hover:border-white/35 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <FaEdit className="w-3.5 h-3.5 text-white" />
+                      <span>Ubah</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(promo.id)}
+                      className="py-2.5 px-3.5 rounded-xl bg-black/40 border border-white/15 hover:border-white/35 text-xs font-semibold text-white flex items-center justify-center transition-colors cursor-pointer"
+                      title="Hapus Promo"
+                      aria-label="Hapus promo"
+                    >
+                      <FaTrash className="w-3.5 h-3.5 text-white" />
+                    </button>
                   </div>
                 </div>
-
-                <div className="flex gap-2.5 mt-6 pt-4 border-t border-white/10">
-                  <button 
-                    onClick={() => {
-                      setEditingPromo(promo);
-                      setFormData({
-                        code: promo.code || '',
-                        name: promo.name || '',
-                        description: promo.description || '',
-                        type: promo.type || 'voucher',
-                        value: promo.value || '',
-                        discountType: promo.discountType || 'percentage',
-                        minPurchase: promo.minPurchase || '',
-                        maxDiscount: promo.maxDiscount || '',
-                        startDate: promo.startDate?.split('T')[0] || '',
-                        endDate: promo.endDate?.split('T')[0] || '',
-                        maxUses: promo.maxUses || '',
-                        perUserLimit: promo.perUserLimit || '1'
-                      });
-                      setShowModal(true);
-                    }}
-                    className="flex-1 py-2.5 px-3 rounded-xl bg-black/40 border border-white/15 hover:border-[#8B5CF6] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <FaEdit className="w-3.5 h-3.5 text-white" />
-                    <span>Edit</span>
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(promo.id)}
-                    className="py-2.5 px-3.5 rounded-xl bg-black/40 border border-white/15 hover:border-red-500/50 text-xs font-semibold text-white flex items-center justify-center transition-colors cursor-pointer"
-                    title="Hapus Promo"
-                  >
-                    <FaTrash className="w-3.5 h-3.5 text-white" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="bg-[#120d1d] border border-white/15 p-14 rounded-2xl text-center shadow-xl">
-            <div 
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-white/10"
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-white/15"
               style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }}
             >
               <FaGift className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">Belum Ada Promo</h3>
-            <p className="text-xs text-white/60 mb-6 max-w-md mx-auto">
-              Buat kode promo atau voucher diskon untuk menarik lebih banyak pembeli tiket konser Anda.
+            <h2 className="text-lg font-bold text-white mb-1">Belum Ada Promo</h2>
+            <p className="text-xs sm:text-sm text-white/60 mb-6 max-w-md mx-auto">
+              Buat kode promo atau voucher diskon untuk menarik lebih banyak pembeli tiket konser kamu.
             </p>
-            <button 
-              onClick={() => {
-                setEditingPromo(null);
-                setFormData({ 
-                  code: '', 
-                  name: '', 
-                  description: '', 
-                  type: 'voucher', 
-                  value: '', 
-                  discountType: 'percentage', 
-                  minPurchase: '', 
-                  maxDiscount: '', 
-                  startDate: '', 
-                  endDate: '', 
-                  maxUses: '', 
-                  perUserLimit: '1' 
-                });
-                setShowModal(true);
-              }}
-              className="rounded-xl px-6 py-3 text-xs font-bold text-white shadow-lg transition hover:opacity-90 inline-flex items-center gap-2 cursor-pointer"
+            <button
+              type="button"
+              onClick={openCreateModal}
+              className="rounded-xl px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-lg transition hover:opacity-90 inline-flex items-center gap-2 cursor-pointer"
               style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)' }}
             >
               <FaPlus className="w-3.5 h-3.5 text-white" />
-              <span>Create Promo</span>
+              <span>Buat Promo</span>
             </button>
           </div>
         )}
-
       </main>
 
-      {/* Modal Create / Edit Promo */}
+      {/* Modal Buat / Ubah Promo */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-[#120d1d] border border-white/20 p-6 sm:p-8 rounded-2xl w-full max-w-2xl shadow-2xl text-xs max-h-[90vh] overflow-y-auto">
-            
+          <div className="bg-[#120d1d] border border-white/20 p-6 sm:p-8 rounded-2xl w-full max-w-2xl shadow-2xl text-xs sm:text-sm max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#6D19B0]/30 border border-[#8B5CF6]/40 flex items-center justify-center text-white">
+                <div
+                  className="w-9 h-9 rounded-xl border border-white/15 flex items-center justify-center text-white"
+                  style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }}
+                >
                   <FaTag className="w-4 h-4 text-white" />
                 </div>
-                <h2 className="text-base font-bold text-white">
-                  {editingPromo ? 'Edit Promo / Voucher' : 'Create New Promo'}
+                <h2 className="text-base sm:text-lg font-bold text-white">
+                  {editingPromo ? 'Ubah Promo / Voucher' : 'Buat Promo Baru'}
                 </h2>
               </div>
-              <button 
-                onClick={() => setShowModal(false)} 
-                className="w-7 h-7 rounded-lg bg-black/40 border border-white/15 flex items-center justify-center text-white/70 hover:text-white transition-colors cursor-pointer"
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                aria-label="Tutup modal"
+                className="w-8 h-8 rounded-lg bg-black/40 border border-white/15 flex items-center justify-center text-white/75 hover:text-white transition-colors cursor-pointer"
               >
                 <FaTimes className="w-3.5 h-3.5 text-white" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Promo Code <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Kode Promo <span className="text-white">*</span>
+                  </label>
                   <input
                     type="text"
                     value={formData.code}
-                    onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all font-mono uppercase"
-                    placeholder="Contoh: SUMMER20"
+                    onChange={(e) =>
+                      setFormData({ ...formData, code: e.target.value.toUpperCase() })
+                    }
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all font-mono uppercase"
+                    placeholder="Contoh: KONSER20"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Promo Name <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Nama Promo <span className="text-white">*</span>
+                  </label>
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all"
-                    placeholder="Contoh: Diskon Musim Panas"
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all"
+                    placeholder="Contoh: Diskon Spesial Awal Tahun"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-white/80 mb-1.5">Description</label>
+                <label className="block font-semibold text-white/85 mb-1.5">Deskripsi</label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all"
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  suppressHydrationWarning
+                  className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all"
                   rows="2"
-                  placeholder="Deskripsi atau ketentuan promo..."
+                  placeholder="Deskripsi atau syarat ketentuan promo..."
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Type <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Jenis Promo <span className="text-white">*</span>
+                  </label>
                   <select
                     value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all cursor-pointer"
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-white/40 focus:outline-none transition-all cursor-pointer [&>option]:bg-[#120d1d]"
                     required
                   >
                     <option value="voucher">Voucher</option>
-                    <option value="discount">Discount</option>
+                    <option value="discount">Diskon</option>
                     <option value="flash_sale">Flash Sale</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Calculation <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Tipe Potongan <span className="text-white">*</span>
+                  </label>
                   <select
                     value={formData.discountType}
-                    onChange={(e) => setFormData({...formData, discountType: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all cursor-pointer"
+                    onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-white/40 focus:outline-none transition-all cursor-pointer [&>option]:bg-[#120d1d]"
                     required
                   >
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Amount (Rp)</option>
+                    <option value="percentage">Persentase (%)</option>
+                    <option value="fixed">Nominal Tetap (Rp)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Value <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Nilai Potongan <span className="text-white">*</span>
+                  </label>
                   <input
                     type="number"
                     value={formData.value}
-                    onChange={(e) => setFormData({...formData, value: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all"
-                    placeholder={formData.discountType === 'percentage' ? 'Contoh: 20' : 'Contoh: 50000'}
+                    onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all"
+                    placeholder={
+                      formData.discountType === 'percentage' ? 'Contoh: 20' : 'Contoh: 50000'
+                    }
                     required
                     min="0"
                     max={formData.discountType === 'percentage' ? '100' : undefined}
@@ -476,104 +571,121 @@ export default function PromoPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Min. Purchase (Rp)</label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Minimal Pembelian (Rp)
+                  </label>
                   <input
                     type="number"
                     value={formData.minPurchase || ''}
-                    onChange={(e) => setFormData({...formData, minPurchase: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all"
+                    onChange={(e) => setFormData({ ...formData, minPurchase: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all"
                     placeholder="Contoh: 100000"
                     min="0"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Max. Discount (Rp)</label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Maksimal Diskon (Rp)
+                  </label>
                   <input
                     type="number"
                     value={formData.maxDiscount || ''}
-                    onChange={(e) => setFormData({...formData, maxDiscount: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all"
+                    onChange={(e) => setFormData({ ...formData, maxDiscount: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all"
                     placeholder="Contoh: 50000"
                     min="0"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Start Date <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Tanggal Mulai <span className="text-white">*</span>
+                  </label>
                   <input
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all cursor-pointer"
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-white/40 focus:outline-none transition-all cursor-pointer"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">End Date <span className="text-[#D8B4FE]">*</span></label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Tanggal Berakhir <span className="text-white">*</span>
+                  </label>
                   <input
                     type="date"
                     value={formData.endDate}
-                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all cursor-pointer"
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-white/40 focus:outline-none transition-all cursor-pointer"
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Max. Uses (Batas Kuota)</label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Batas Total Penggunaan
+                  </label>
                   <input
                     type="number"
                     value={formData.maxUses || ''}
-                    onChange={(e) => setFormData({...formData, maxUses: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/30 focus:border-[#8B5CF6] focus:outline-none transition-all"
+                    onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white placeholder-white/35 focus:border-white/40 focus:outline-none transition-all"
                     placeholder="Kosongkan jika tanpa batas"
                     min="1"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-white/80 mb-1.5">Per User Limit</label>
+                  <label className="block font-semibold text-white/85 mb-1.5">
+                    Batas per Pengguna
+                  </label>
                   <input
                     type="number"
                     value={formData.perUserLimit || 1}
-                    onChange={(e) => setFormData({...formData, perUserLimit: e.target.value})}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all"
+                    onChange={(e) => setFormData({ ...formData, perUserLimit: e.target.value })}
+                    suppressHydrationWarning
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-white/40 focus:outline-none transition-all"
                     min="1"
                   />
                 </div>
               </div>
 
               <div className="flex items-center gap-3 pt-4 border-t border-white/10 mt-6">
-                <button 
-                  type="button" 
-                  onClick={() => setShowModal(false)} 
-                  className="flex-1 rounded-xl border border-white/15 bg-black/40 py-3 text-center font-semibold text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 rounded-xl border border-white/15 bg-black/40 py-3 text-center font-semibold text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                 >
-                  Cancel
+                  Batal
                 </button>
-                <button 
-                  type="submit" 
-                  disabled={formLoading} 
+                <button
+                  type="submit"
+                  disabled={formLoading}
                   className="flex-1 rounded-xl py-3 font-bold text-white shadow-lg transition hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   style={{ background: 'linear-gradient(90deg, #6D19B0 0%, #B900A3 100%)' }}
                 >
                   {formLoading ? (
                     <>
                       <FaSpinner className="w-3.5 h-3.5 animate-spin text-white" />
-                      <span>Saving...</span>
+                      <span>Menyimpan...</span>
                     </>
                   ) : (
-                    <span>{editingPromo ? 'Update Promo' : 'Create Promo'}</span>
+                    <span>{editingPromo ? 'Simpan Perubahan' : 'Simpan Promo'}</span>
                   )}
                 </button>
               </div>
             </form>
-
           </div>
         </div>
       )}

@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaSpinner, FaCheckCircle, FaTimesCircle, FaClock, FaSearch } from 'react-icons/fa';
+import { FaSpinner, FaSearch } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import toast from 'react-hot-toast';
@@ -39,6 +39,7 @@ export default function OrdersPage() {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [downloadingOrderId, setDownloadingOrderId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -69,13 +70,241 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.replace('/login');
       return;
     }
     if (!user) return undefined;
     const timeout = setTimeout(() => { void fetchOrders(); }, 0);
     return () => clearTimeout(timeout);
   }, [user, loading, filter, router, fetchOrders]);
+
+  const drawRoundRect = (ctx, x, y, width, height, radius) => {
+    ctx.beginPath();
+    ctx.roundRect(x, y, width, height, radius);
+  };
+
+  const generateInvoicePngBlob = (order) => {
+    const tickets = Array.isArray(order.orderTickets) ? order.orderTickets : [];
+    const ticketRowsCount = Math.max(tickets.length, 1);
+
+    const width = 760;
+    const height = 560 + ticketRowsCount * 34;
+    const scale = 2;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas tidak didukung');
+
+    ctx.scale(scale, scale);
+
+    // Latar belakang gelap
+    ctx.fillStyle = '#07050c';
+    ctx.fillRect(0, 0, width, height);
+
+    // Kartu utama
+    ctx.fillStyle = '#120d1d';
+    drawRoundRect(ctx, 32, 32, width - 64, height - 64, 24);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(250, 47, 132, 0.45)';
+    ctx.lineWidth = 2;
+    drawRoundRect(ctx, 32, 32, width - 64, height - 64, 24);
+    ctx.stroke();
+
+    const orderCode = order.orderNumber || String(order.id);
+    const concertName = order.concert?.name || 'Konser';
+    const venueName = order.concert?.venue?.name || order.concert?.venueName || '-';
+    const concertDate = order.concert?.date
+      ? format(new Date(order.concert.date), 'EEEE, d MMMM yyyy', { locale: id })
+      : '-';
+    const createdDate = order.createdAt
+      ? format(new Date(order.createdAt), 'd MMMM yyyy HH:mm', { locale: id })
+      : '-';
+
+    let y = 76;
+
+    // Header
+    ctx.fillStyle = '#FA2F84';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('BUKTI PEMBAYARAN RESMI', 64, y);
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 28px sans-serif';
+    ctx.fillText('INVOICE PESANAN', 64, y + 34);
+
+    // Badge status
+    const statusLabel = (order.status || 'paid').toUpperCase();
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.15)';
+    drawRoundRect(ctx, width - 172, y + 4, 108, 32, 16);
+    ctx.fill();
+    ctx.fillStyle = '#34D399';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(statusLabel, width - 118, y + 25);
+    ctx.textAlign = 'left';
+
+    y += 66;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+    ctx.font = '14px sans-serif';
+    ctx.fillText(`No. Order: ${orderCode}`, 64, y);
+    ctx.textAlign = 'right';
+    ctx.fillText(`Dibuat: ${createdDate}`, width - 64, y);
+    ctx.textAlign = 'left';
+
+    // Garis pemisah
+    y += 22;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(64, y);
+    ctx.lineTo(width - 64, y);
+    ctx.stroke();
+
+    // Detail Konser
+    y += 32;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('DETAIL KONSER', 64, y);
+
+    y += 26;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText(concertName, 64, y);
+
+    y += 24;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.font = '14px sans-serif';
+    ctx.fillText(`Tanggal : ${concertDate}`, 64, y);
+
+    y += 22;
+    ctx.fillText(`Lokasi  : ${venueName}`, 64, y);
+
+    y += 22;
+    ctx.fillText(`Metode  : ${order.paymentMethod || 'midtrans'}`, 64, y);
+
+    // Garis pemisah
+    y += 24;
+    ctx.beginPath();
+    ctx.moveTo(64, y);
+    ctx.lineTo(width - 64, y);
+    ctx.stroke();
+
+    // Rincian Tiket
+    y += 32;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText(`RINCIAN TIKET (${tickets.length})`, 64, y);
+
+    y += 26;
+    if (tickets.length > 0) {
+      tickets.forEach((t, idx) => {
+        const label = t.seat ? `${t.seat.row}-${t.seat.number}` : t.category || 'Tiket';
+        const priceText = `Rp ${Number(t.price || 0).toLocaleString('id-ID')}`;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(`${idx + 1}. ${label} (${t.ticketNumber || t.id})`, 64, y);
+        ctx.textAlign = 'right';
+        ctx.fillText(priceText, width - 64, y);
+        ctx.textAlign = 'left';
+        y += 32;
+      });
+    } else {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Tidak ada rincian tiket individual', 64, y);
+      y += 32;
+    }
+
+    // Garis pemisah
+    y += 6;
+    ctx.beginPath();
+    ctx.moveTo(64, y);
+    ctx.lineTo(width - 64, y);
+    ctx.stroke();
+
+    // Ringkasan Biaya
+    const subtotal = Number(order.subtotal || order.totalAmount || 0).toLocaleString('id-ID');
+    const serviceFee = Number(order.serviceFee || 0).toLocaleString('id-ID');
+    const discount = Number(order.discount || 0).toLocaleString('id-ID');
+    const total = Number(order.totalAmount || 0).toLocaleString('id-ID');
+
+    const summaryRows = [
+      { label: 'Subtotal', value: `Rp ${subtotal}`, color: '#FFFFFF' },
+      { label: 'Biaya Layanan', value: `Rp ${serviceFee}`, color: '#FFFFFF' },
+      { label: 'Diskon', value: `- Rp ${discount}`, color: '#34D399' },
+    ];
+
+    y += 30;
+    summaryRows.forEach((row) => {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = '14px sans-serif';
+      ctx.fillText(row.label, 64, y);
+      ctx.fillStyle = row.color;
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(row.value, width - 64, y);
+      ctx.textAlign = 'left';
+      y += 26;
+    });
+
+    y += 6;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.beginPath();
+    ctx.moveTo(64, y);
+    ctx.lineTo(width - 64, y);
+    ctx.stroke();
+
+    y += 34;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText('Total Akhir', 64, y);
+
+    ctx.fillStyle = '#F472B6';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`Rp ${total}`, width - 64, y);
+    ctx.textAlign = 'left';
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('Gagal membuat gambar PNG'));
+          return;
+        }
+        resolve(blob);
+      }, 'image/png');
+    });
+  };
+
+  const triggerFileDownload = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const handleDownloadInvoice = async (order) => {
+    const orderCode = order.orderNumber || order.id;
+    try {
+      setDownloadingOrderId(order.id);
+      toast.loading('Menyiapkan invoice PNG...', { id: `invoice-${order.id}` });
+
+      const pngBlob = await generateInvoicePngBlob(order);
+      triggerFileDownload(pngBlob, `invoice-${orderCode}.png`);
+      toast.success('Invoice PNG berhasil diunduh', { id: `invoice-${order.id}` });
+    } catch (error) {
+      console.error('Error downloading invoice PNG:', error);
+      toast.error('Gagal mengunduh invoice PNG', { id: `invoice-${order.id}` });
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   const getStatusBadge = (status) => {
     const map = {
@@ -134,6 +363,7 @@ export default function OrdersPage() {
             {['all', 'paid', 'pending', 'cancelled', 'refunded', 'expired'].map((status) => (
               <button
                 key={status}
+                type="button"
                 onClick={() => setFilter(status)}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all capitalize ${
                   filter === status
@@ -169,6 +399,7 @@ export default function OrdersPage() {
           <div className="space-y-4">
             {filteredOrders.map((order) => {
               const statusBadge = getStatusBadge(order.status);
+              const isDownloading = downloadingOrderId === order.id;
               return (
                 <div key={order.id} className="relative rounded-2xl border border-[#FA2F84]/40 bg-[#120d1d] p-5 shadow-lg transition-all hover:border-[#FA2F84]">
                   
@@ -195,7 +426,7 @@ export default function OrdersPage() {
                         <span>{order.concert?.date ? format(new Date(order.concert.date), 'd MMM yyyy', { locale: id }) : '-'}</span>
                       </div>
 
-                      {/* Jumlah tiket menggunakan ticket (3).png */}
+                      {/* Jumlah tiket menggunakan ticket.png */}
                       <div className="flex items-center gap-2">
                         <Image src="/icons/ticket.png" alt="Ticket" width={14} height={14} unoptimized className="object-contain shrink-0" />
                         <span>{order.orderTickets?.length || 0} tiket</span>
@@ -229,10 +460,15 @@ export default function OrdersPage() {
                       {order.status === 'paid' && (
                         <button 
                           type="button"
-                          onClick={() => toast.success('Mengunduh invoice...')}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-white/15 bg-black/40 text-xs font-semibold text-white hover:bg-white/10 transition-colors shadow-sm"
+                          disabled={isDownloading}
+                          onClick={() => handleDownloadInvoice(order)}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-white/15 bg-black/40 text-xs font-semibold text-white hover:bg-white/10 disabled:opacity-50 transition-colors shadow-sm"
                         >
-                          <Image src="/icons/download.png" alt="Download" width={13} height={13} unoptimized className="object-contain" />
+                          {isDownloading ? (
+                            <FaSpinner className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Image src="/icons/download.png" alt="Download" width={13} height={13} unoptimized className="object-contain" />
+                          )}
                           Invoice
                         </button>
                       )}
@@ -260,6 +496,7 @@ export default function OrdersPage() {
             {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
+                type="button"
                 onClick={() => {
                   setPagination({ ...pagination, page });
                   fetchOrders(page);

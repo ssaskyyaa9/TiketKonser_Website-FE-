@@ -10,12 +10,9 @@ import {
   FaSpinner, 
   FaCheckCircle,
   FaBuilding,
-  FaMusic,
   FaCalendarAlt,
   FaClock,
   FaMapMarkerAlt,
-  FaTicketAlt,
-  FaUsers,
   FaStar,
   FaBolt,
   FaTrash,
@@ -41,6 +38,23 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+const normalizeRupiah = (rawValue) => {
+  if (rawValue === '' || rawValue === null || rawValue === undefined) return 0;
+  const cleaned = String(rawValue).replace(/[^\d.-]/g, '');
+  const parsed = Number(cleaned);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+  // Jika user mengetik angka satuan ribuan singkat seperti "175", konversi ke 175.000
+  if (parsed > 0 && parsed < 1000) {
+    return parsed * 1000;
+  }
+  return Math.round(parsed);
+};
+
+const formatRupiah = (amount) => {
+  const numeric = normalizeRupiah(amount);
+  return `Rp ${numeric.toLocaleString('id-ID')}`;
+};
 
 const VENUE_TYPES = {
   stadium: {
@@ -162,9 +176,13 @@ export default function CreateConcertPage() {
   };
 
   const calculatedTotalTickets = formData.sections.reduce((total, s) => {
-    if (s.type === 'standing') return total + (parseInt(s.capacity) || 0);
-    return total + (parseInt(s.rows) || 0) * (parseInt(s.seatsPerRow) || 0);
+    if (s.type === 'standing') return total + (parseInt(s.capacity, 10) || 0);
+    return total + (parseInt(s.rows, 10) || 0) * (parseInt(s.seatsPerRow, 10) || 0);
   }, 0);
+
+  const normalizedSectionPrices = formData.sections.map((section) =>
+    normalizeRupiah(section.price)
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -213,24 +231,47 @@ export default function CreateConcertPage() {
       }
 
       let totalTickets = 0;
-      formData.sections.forEach(section => {
-        if (!section.name.trim() || !Number.isFinite(Number(section.price)) || Number(section.price) < 0) {
+      const preparedSections = formData.sections.map((section) => {
+        const price = normalizeRupiah(section.price);
+        if (!section.name || !section.name.trim() || !Number.isFinite(price) || price < 0) {
           throw new Error('Nama, kategori, dan harga section harus valid');
         }
+
         if (section.type === 'standing') {
           const capacity = Number(section.capacity);
-          if (!Number.isInteger(capacity) || capacity < 1) throw new Error('Kapasitas standing harus lebih dari 0');
-          totalTickets += capacity;
-        } else {
-          const rows = Number(section.rows);
-          const seatsPerRow = Number(section.seatsPerRow);
-          if (!Number.isInteger(rows) || rows < 1 || !Number.isInteger(seatsPerRow) || seatsPerRow < 1) {
-            throw new Error('Rows dan seats per row harus lebih dari 0');
+          if (!Number.isInteger(capacity) || capacity < 1) {
+            throw new Error('Kapasitas standing harus lebih dari 0');
           }
-          totalTickets += rows * seatsPerRow;
+          totalTickets += capacity;
+          return {
+            ...section,
+            capacity,
+            price,
+          };
         }
+
+        const rows = Number(section.rows);
+        const seatsPerRow = Number(section.seatsPerRow);
+        if (!Number.isInteger(rows) || rows < 1 || !Number.isInteger(seatsPerRow) || seatsPerRow < 1) {
+          throw new Error('Rows dan seats per row harus lebih dari 0');
+        }
+        totalTickets += rows * seatsPerRow;
+        return {
+          ...section,
+          rows,
+          seatsPerRow,
+          price,
+        };
       });
+
       if (!totalTickets) throw new Error('Kapasitas tiket harus lebih dari 0');
+
+      const sectionPrices = preparedSections.map((section) => section.price);
+      const minPrice = sectionPrices.length > 0 ? Math.min(...sectionPrices) : 0;
+      const maxPrice = sectionPrices.length > 0 ? Math.max(...sectionPrices) : 0;
+      const flashSalePrice = formData.isFlashSale
+        ? normalizeRupiah(formData.flashSalePrice)
+        : null;
 
       const payload = {
         name: formData.name.trim(),
@@ -245,16 +286,16 @@ export default function CreateConcertPage() {
         address: formData.address.trim(),
         capacity: totalTickets,
         totalTickets,
-        minPrice: Math.min(...formData.sections.map((section) => Number(section.price))),
-        maxPrice: Math.max(...formData.sections.map((section) => Number(section.price))),
+        minPrice,
+        maxPrice,
         genre: formData.genre || '',
         rules: formData.rules || '',
         youtubeTrailer: formData.youtubeTrailer || '',
         isFeatured: formData.isFeatured || false,
         isFlashSale: formData.isFlashSale || false,
-        flashSalePrice: formData.flashSalePrice ? parseFloat(formData.flashSalePrice) : null,
+        flashSalePrice,
         flashSaleEnd: formData.flashSaleEnd || null,
-        sections: formData.sections,
+        sections: preparedSections,
         status: 'published'
       };
 
@@ -316,6 +357,7 @@ export default function CreateConcertPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <button
+              type="button"
               onClick={() => router.back()}
               className="w-10 h-10 rounded-xl bg-[#120d1d] border border-white/15 hover:border-[#8B5CF6] flex items-center justify-center transition-colors"
             >
@@ -409,6 +451,7 @@ export default function CreateConcertPage() {
 
                 <div className="mt-8 pt-5 border-t border-white/10 flex justify-end">
                   <button
+                    type="button"
                     onClick={() => {
                       if (!formData.venueType) {
                         toast.error('Pilih tipe venue terlebih dahulu');
@@ -568,13 +611,15 @@ export default function CreateConcertPage() {
                                 </select>
                               </div>
                               <div className="sm:col-span-4">
-                                <label className="block text-[11px] text-white/60 mb-1">Harga (Rp)</label>
+                                <label className="block text-[11px] text-white/60 mb-1">
+                                  Harga ({formatRupiah(section.price)})
+                                </label>
                                 <input
                                   type="number"
                                   value={section.price}
                                   onChange={(e) => handleSectionChange(index, 'price', e.target.value)}
                                   className="w-full rounded-lg border border-white/15 bg-[#120d1d] px-3 py-2 text-xs text-white focus:border-[#8B5CF6] focus:outline-none"
-                                  placeholder="150000"
+                                  placeholder="175000"
                                   min="0"
                                 />
                               </div>
@@ -831,14 +876,16 @@ export default function CreateConcertPage() {
                   {formData.isFlashSale && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border border-[#8B5CF6]/40 rounded-xl p-4 bg-[#6D19B0]/10">
                       <div>
-                        <label className="block font-semibold text-white/80 mb-1.5">Harga Flash Sale (Rp)</label>
+                        <label className="block font-semibold text-white/80 mb-1.5">
+                          Harga Flash Sale ({formatRupiah(formData.flashSalePrice)})
+                        </label>
                         <input
                           type="number"
                           name="flashSalePrice"
                           value={formData.flashSalePrice}
                           onChange={handleInputChange}
                           className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-2 text-white focus:outline-none"
-                          placeholder="Harga promo"
+                          placeholder="175000"
                           min="0"
                         />
                       </div>
@@ -945,13 +992,13 @@ export default function CreateConcertPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white/60">Total Tiket Tersedia</span>
-                    <span className="font-bold text-[#D8B4FE]">{calculatedTotalTickets.toLocaleString()} Tiket</span>
+                    <span className="font-bold text-[#D8B4FE]">{calculatedTotalTickets.toLocaleString('id-ID')} Tiket</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white/60">Harga Mulai Dari</span>
                     <span className="font-extrabold text-white text-sm">
-                      {formData.sections.length > 0
-                        ? `Rp ${Math.min(...formData.sections.map((s) => Number(s.price) || 0)).toLocaleString('id-ID')}`
+                      {normalizedSectionPrices.length > 0
+                        ? formatRupiah(Math.min(...normalizedSectionPrices))
                         : 'Rp 0'}
                     </span>
                   </div>
