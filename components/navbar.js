@@ -58,7 +58,7 @@ const Navbar = () => {
         { href: '/settings', icon: '/icons/setting.png', label: 'Pengaturan' },
       ];
 
-  const isLandingPage = pathname === '/';
+  const isLandingPage = pathname === '/' || pathname === '/landing';
   const displayName = user?.name ? user.name.split(' ')[0] : (user ? user.name : 'Pengguna');
 
   const getRoleLabel = () => {
@@ -77,7 +77,7 @@ const Navbar = () => {
         <div className="flex items-center space-x-6">
           <Link href={isLandingPage ? '#top' : '/'} className="flex items-center">
             <div className="relative -top-4 -left-7 w-44 h-16 flex items-center overflow-visible">
-              <Image src="/icons/showtime.png" alt="SHOWTIME Logo" width={210} height={70} style={{ objectFit: 'contain', cursor: 'pointer', maxWidth: 'none' }} className="absolute left-0 -top-3" priority />
+              <Image src="/icons/showtime.png" alt="SHOWTIME Logo" width={210} height={70} style={{ objectFit: 'contain', cursor: 'pointer', maxWidth: 'none', height: 'auto' }} className="absolute left-0 -top-3" priority />
             </div>
           </Link>
 
@@ -88,12 +88,12 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center space-x-5">
-          <Link href="/help" className="rounded-full hover:bg-white/10 transition-colors flex items-center justify-center p-1">
+          <Link href="/landing#faq" className="rounded-full hover:bg-white/10 transition-colors flex items-center justify-center p-1">
             <Image src="/icons/question.png" alt="Help" width={22} height={22} className="object-contain" />
           </Link>
 
           <div className="flex items-center justify-center text-white">
-            <NotificationBell />
+            {!authLoading && user && <NotificationBell />}
           </div>
 
           {authLoading ? null : user ? (
@@ -150,7 +150,7 @@ const Navbar = () => {
               <Link href="/login" className="px-4 py-1.5 text-sm text-white hover:text-[#e040fb] transition-colors">
                 Login
               </Link>
-              <Link href="/register" className="px-4 py-1.5 text-sm rounded-full text-white font-medium shadow-lg hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
+              <Link href="/registrasi" className="px-4 py-1.5 text-sm rounded-full text-white font-medium shadow-lg hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
                 Register
               </Link>
             </div>
@@ -190,7 +190,7 @@ const Navbar = () => {
                 Login
               </Link>
               
-              <Link href="/register" className="text-center py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
+              <Link href="/registrasi" className="text-center py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
                 Register
               </Link>
             </div>

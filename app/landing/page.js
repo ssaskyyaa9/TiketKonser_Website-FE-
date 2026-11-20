@@ -1,8 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import axios from 'axios';
+import { getConcertPoster, getMediaUrl } from '../../lib/media-url';
+import { useAuth } from '../../context/AuthContext';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 function SkeletonCard() {
   return (
@@ -34,9 +39,92 @@ function SkeletonCard() {
 
 export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(true);
-  const concerts = [];
+  const [concerts, setConcerts] = useState([]);
+  const [concertsError, setConcertsError] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const { user, loading: authLoading, logout } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!profileRef.current?.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchConcerts = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/concerts`, { timeout: 10000 });
+        const rows = response?.data?.data;
+        const landingConcerts = Array.isArray(rows)
+          ? rows.map((concert) => {
+              const date = concert.date ? new Date(concert.date) : null;
+              const isValidDate = date && !Number.isNaN(date.getTime());
+              const price = Number(concert.minPrice ?? concert.price ?? 0);
+
+              return {
+                id: concert.id,
+                artist: concert.name || 'Konser',
+                image: getConcertPoster(concert.concertGalleries) || getMediaUrl(concert.thumbnail),
+                date: isValidDate ? date.toLocaleDateString('id-ID', { day: '2-digit' }) : '--',
+                month: isValidDate ? date.toLocaleDateString('id-ID', { month: 'short' }).toUpperCase() : '',
+                opener: concert.organizer?.name || concert.description || 'Live concert',
+                genres: concert.category || concert.genre || 'Musik',
+                location: concert.venue?.name || concert.venueName || concert.venue?.city || 'Lokasi belum diatur',
+                price: `Rp ${price.toLocaleString('id-ID')}`,
+              };
+            })
+          : [];
+
+        if (!cancelled) setConcerts(landingConcerts);
+      } catch (error) {
+        console.error('Failed to load landing page concerts:', error);
+        if (!cancelled) setConcertsError(true);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    void fetchConcerts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [openFaq, setOpenFaq] = useState(null);
+
+  const accountMenu = user?.role === 'organizer' || user?.role === 'eo'
+    ? [
+        { href: '/organizer/dashboard', icon: '/icons/dashboard.png', label: 'Halaman Utama' },
+        { href: '/organizer/concerts', icon: '/icons/music.png', label: 'Kelola Konser' },
+        { href: '/organizer/orders', icon: '/icons/agreement.png', label: 'Daftar Pesanan' },
+        { href: '/organizer/profile', icon: '/icons/user.png', label: 'Profil Saya' },
+      ]
+    : user?.role === 'customer'
+      ? [
+          { href: '/dashboard', icon: '/icons/dashboard.png', label: 'Halaman Utama' },
+          { href: '/my-tickets', icon: '/icons/ticket.png', label: 'Tiket Saya' },
+          { href: '/wishlist', icon: '/icons/bookmark.png', label: 'Disimpan' },
+          { href: '/orders', icon: '/icons/agreement.png', label: 'Riwayat Pembelian' },
+          { href: '/profile', icon: '/icons/user.png', label: 'Profil Saya' },
+          { href: '/settings', icon: '/icons/setting.png', label: 'Pengaturan' },
+        ]
+      : [
+          {
+            href: user?.role === 'super_admin' ? '/super-admin/dashboard' : '/admin/dashboard',
+            icon: '/icons/dashboard.png',
+            label: 'Halaman Utama',
+          },
+          { href: '/profile', icon: '/icons/user.png', label: 'Profil Saya' },
+          { href: '/settings', icon: '/icons/setting.png', label: 'Pengaturan' },
+        ];
 
   const faqData = [
     {
@@ -70,29 +158,92 @@ export default function LandingPage() {
   };
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: '#030205', color: '#ffffff', fontFamily: 'sans-serif' }}>
+    <main id="top" style={{ minHeight: '100vh', backgroundColor: '#030205', color: '#ffffff', fontFamily: 'sans-serif' }}>
       <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden' }}>
         
-        <header style={{ position: 'relative', zIndex: 20, width: '100%', backgroundColor: '#030205', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0px', paddingBottom: '0px', paddingLeft: '24px', paddingRight: '24px', height: '70px', display: 'flex', alignItems: 'center' }}>
+        <header style={{ position: 'fixed', top: 0, left: 0, zIndex: 50, width: '100%', backgroundColor: '#030205', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '0px', paddingBottom: '0px', paddingLeft: '24px', paddingRight: '24px', height: '70px', display: 'flex', alignItems: 'center' }}>
           <div style={{ maxWidth: '1280px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Image src="/icons/showtime.png" alt="SHOWTIME Logo" width={250} height={250} style={{ objectFit: 'contain', cursor: 'pointer', height: 'auto', marginLeft: '-10px', marginTop: '6px' }} />
+              <Link href="#top" aria-label="ShowTime - Beranda">
+                <Image src="/icons/showtime.png" alt="SHOWTIME Logo" width={250} height={250} style={{ objectFit: 'contain', cursor: 'pointer', height: 'auto', marginLeft: '-10px', marginTop: '6px' }} />
+              </Link>
             </div>
 
             <nav style={{ display: 'flex', alignItems: 'center', gap: '75px', fontSize: '16px', fontWeight: 500, color: '#e5e7eb', marginLeft: '-100px'}}>
-              <Link href="#" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Beranda </Link>
-              <Link href="#" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Konser </Link>
-              <Link href="#" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Trending </Link>
-              <Link href="#" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Tentang kami </Link>
+              <Link href="#top" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Beranda </Link>
+              <Link href="#konser" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Konser </Link>
+              <Link href="#trending" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Trending </Link>
+              <Link href="#tentang" style={{ color: '#e5e7eb', textDecoration: 'none' }}> Tentang kami </Link>
             </nav>
 
-            <Link href="/registrasi" style={{ textDecoration: 'none' }}>
-              <button style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', paddingLeft: '35px', paddingRight: '35px', paddingTop: '5px', paddingBottom: '5px', borderRadius: '8px', fontWeight: 500, fontSize: '16px', color: '#ffffff', border: 'none', cursor: 'pointer' }}> 
-                Bergabung 
-              </button>
-            </Link>
+            {authLoading ? null : user ? (
+              <div ref={profileRef} style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  aria-label="Buka menu profil"
+                  aria-expanded={isProfileOpen}
+                  aria-haspopup="menu"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIsProfileOpen((isOpen) => !isOpen);
+                  }}
+                  className="flex items-center gap-5 py-1 rounded-full transition-colors group focus:outline-none cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-md overflow-hidden" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }}>
+                    <Image src="/icons/user.png" alt="" width={16} height={16} className="object-contain filter brightness-200" />
+                  </div>
+                  <span className="text-sm font-normal text-white">{user.name?.split(' ')[0] || 'Pengguna'}</span>
+                  <div className="w-4 h-4 flex items-center justify-center ml-0.5">
+                    <Image src="/icons/down.png" alt="" width={14} height={14} className={`transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  </div>
+                </button>
+
+                {isProfileOpen && (
+                  <div role="menu" className="absolute right-0 mt-3 w-60 bg-black/75 backdrop-blur-md rounded-2xl overflow-hidden shadow-2xl border border-[#6F6D74] z-50">
+                    <div className="px-4 py-3 border-b border-[#6F6D74]">
+                      <p className="font-bold text-xs text-white truncate">{user.name}</p>
+                      <p className="text-[11px] text-zinc-400 truncate mt-0.5">{user.email}</p>
+                    </div>
+
+                    <div className="p-2 space-y-1">
+                      {accountMenu.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          role="menuitem"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="relative flex items-center gap-3 px-3 py-2.5 text-xs transition-colors rounded-xl overflow-hidden hover:bg-white/5 text-zinc-300 hover:text-white"
+                        >
+                          <Image src={item.icon} alt={item.label} width={16} height={16} className="object-contain shrink-0 opacity-85" />
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+
+                      <div className="border-t border-[#6F6D74] pt-1 mt-1">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={logout}
+                          className="flex items-center gap-3 px-3 py-2.5 text-xs text-red-500 hover:bg-red-500/10 w-full transition-colors text-left font-medium rounded-xl"
+                        >
+                          <Image src="/icons/logout.png" alt="" width={16} height={16} className="object-contain shrink-0" />
+                          <span>Keluar Akun</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link href="/registrasi" style={{ textDecoration: 'none' }}>
+                <span style={{ display: 'inline-block', background: 'linear-gradient(to right, #8138E8, #F73BE1)', paddingLeft: '35px', paddingRight: '35px', paddingTop: '5px', paddingBottom: '5px', borderRadius: '8px', fontWeight: 500, fontSize: '16px', color: '#ffffff' }}>
+                  Bergabung
+                </span>
+              </Link>
+            )}
           </div>
         </header>
+        <div aria-hidden="true" style={{ height: '70px', flexShrink: 0 }} />
 
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
           <Image src="/icons/bg.png" alt="Background Konser" fill style={{ objectFit: 'cover', objectPosition: 'center', opacity: 1 }} priority />
@@ -114,15 +265,15 @@ export default function LandingPage() {
             </p>
 
             <div style={{ display: 'flex', gap: '20px', marginTop: '32px' }}>
-              <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'linear-gradient(to right, #8138E8, #F73BE1)', paddingLeft: '28px', paddingRight: '28px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '16px', fontWeight: 600, fontSize: '16px', color: '#ffffff', border: 'none', cursor: 'pointer' }}>
+              <Link href="/concerts" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: 'linear-gradient(to right, #8138E8, #F73BE1)', paddingLeft: '28px', paddingRight: '28px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '16px', fontWeight: 600, fontSize: '16px', color: '#ffffff', border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
                 <Image src="/icons/tiket lp.png" alt="Tiket Icon" width={25} height={25} style={{ marginRight: '6px' }} />
                 <span>Cari Konser</span>
-              </button>
+              </Link>
 
-              <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', backgroundColor: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(8px)', border: '1px solid #6b7280', paddingLeft: '28px', paddingRight: '28px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '16px', fontWeight: 600, fontSize: '16px', color: '#ffffff', cursor: 'pointer' }}>
+              <Link href="/concerts" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', backgroundColor: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(8px)', border: '1px solid #6b7280', paddingLeft: '28px', paddingRight: '28px', paddingTop: '12px', paddingBottom: '12px', borderRadius: '16px', fontWeight: 600, fontSize: '16px', color: '#ffffff', cursor: 'pointer', textDecoration: 'none' }}>
                 <Image src="/icons/kalender up.png" alt="Kalender Icon" width={20} height={20} style={{ marginRight: '6px' }} />
                 <span>Lihat Jadwal</span>
-              </button>
+              </Link>
             </div>
           </section>
 
@@ -173,7 +324,7 @@ export default function LandingPage() {
       </div>
 
       <div style={{ backgroundColor: '#030205', width: '100%', paddingTop: '10px', paddingBottom: '40px' }}>
-        <section style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
+        <section id="konser" style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', scrollMarginTop: '80px' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
             <div>
@@ -184,7 +335,7 @@ export default function LandingPage() {
               <p style={{ color: '#d1d5db', fontSize: '20px', marginTop: '6px', margin: 0 }}> Deretan konser megah siap memanjakan telinga kamu. </p>
             </div>
 
-            <Link href="#" style={{ color: '#B003A4', fontSize: '14px', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Link href="/concerts" style={{ color: '#B003A4', fontSize: '14px', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
               Lihat semua &rarr;
             </Link>
           </div>
@@ -196,11 +347,19 @@ export default function LandingPage() {
                 Array.from({ length: 5 }).map((_, index) => (
                   <SkeletonCard key={index} />
                 ))
+              ) : concertsError ? (
+                <p style={{ gridColumn: '1 / -1', color: '#9ca3af', textAlign: 'center' }}>
+                  Konser gagal dimuat. Silakan coba lagi nanti.
+                </p>
+              ) : concerts.length === 0 ? (
+                <p style={{ gridColumn: '1 / -1', color: '#9ca3af', textAlign: 'center' }}>
+                  Belum ada konser yang dipublikasikan.
+                </p>
               ) : (
-                concerts.map((concert) => (
+                concerts.slice(0, 5).map((concert) => (
                   <div key={concert.id} style={{ position: 'relative', height: '380px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: '#120f1d', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '16px' }} >
                     {concert.image && (
-                      <Image src={concert.image} alt={concert.artist} fill style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }} />
+                      <Image src={concert.image} alt={concert.artist} fill unoptimized style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }} />
                     )}
 
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,15,0.98) 40%, rgba(10,10,15,0.3) 70%, rgba(10,10,15,0.5) 100%)', zIndex: 1 }} />
@@ -242,9 +401,9 @@ export default function LandingPage() {
                           <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>{concert.price}</span>
                         </div>
 
-                        <button style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', border: 'none', cursor: 'pointer' }}>
+                        <Link href={`/concerts/${concert.id}`} style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: 'none' }}>
                           Beli Tiket
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -258,7 +417,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', marginTop: '40px' }}>
+        <section id="trending" style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: '24px', paddingRight: '24px', marginTop: '40px', scrollMarginTop: '80px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
             <div>
               <h2 style={{ fontSize: '24px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -276,11 +435,19 @@ export default function LandingPage() {
                 Array.from({ length: 5 }).map((_, index) => (
                   <SkeletonCard key={index} />
                 ))
+              ) : concertsError ? (
+                <p style={{ gridColumn: '1 / -1', color: '#9ca3af', textAlign: 'center' }}>
+                  Konser gagal dimuat. Silakan coba lagi nanti.
+                </p>
+              ) : concerts.length === 0 ? (
+                <p style={{ gridColumn: '1 / -1', color: '#9ca3af', textAlign: 'center' }}>
+                  Belum ada konser yang dipublikasikan.
+                </p>
               ) : (
-                concerts.map((concert) => (
+                concerts.slice(0, 5).map((concert) => (
                   <div key={concert.id} style={{ position: 'relative', height: '380px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: '#120f1d', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '16px' }} >
                     {concert.image && (
-                      <Image src={concert.image} alt={concert.artist} fill style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }} />
+                      <Image src={concert.image} alt={concert.artist} fill unoptimized style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }} />
                     )}
 
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,15,0.98) 40%, rgba(10,10,15,0.3) 70%, rgba(10,10,15,0.5) 100%)', zIndex: 1 }} />
@@ -322,9 +489,9 @@ export default function LandingPage() {
                           <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>{concert.price}</span>
                         </div>
 
-                        <button style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', border: 'none', cursor: 'pointer' }}>
+                        <Link href={`/concerts/${concert.id}`} style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: 'none' }}>
                           Beli Tiket
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -359,7 +526,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section style={{ maxWidth: '1280px', margin: '60px auto 0 auto', paddingLeft: '24px', paddingRight: '24px' }}>
+        <section id="tentang" style={{ maxWidth: '1280px', margin: '60px auto 0 auto', paddingLeft: '24px', paddingRight: '24px', scrollMarginTop: '80px' }}>
           <div style={{ marginBottom: '32px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ width: '5px', height: '20px', background: 'linear-gradient(180deg, #6D19B0 0%, #B900A3 100%)', display: 'inline-block', borderRadius: '2px' }} />
@@ -419,7 +586,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section style={{ maxWidth: '1280px', margin: '60px auto 0 auto', paddingLeft: '24px', paddingRight: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <section id="cara-kerja" style={{ maxWidth: '1280px', margin: '60px auto 0 auto', paddingLeft: '24px', paddingRight: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', scrollMarginTop: '80px' }}>
           <div style={{ position: 'relative', borderRadius: '16px', padding: '12px 32px', marginBottom: '50px', backgroundColor: '#030205' }}>
             <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
               <defs>
@@ -529,7 +696,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-          <div style={{ position: 'relative', marginBottom: '100px' }}>
+          <div id="faq" style={{ position: 'relative', marginBottom: '100px', scrollMarginTop: '80px' }}>
             <div style={{ position: 'absolute', left: '-62px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>
               <Image src="/icons/bintang.png" alt="Decoration Left" width={230} height={230} style={{ objectFit: 'contain' }} />
             </div>
@@ -585,18 +752,18 @@ export default function LandingPage() {
               <div>
                 <h4 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff', lineHeight: '1.2' }}> Navigasi </h4>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Beranda</a></li>
-                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Konser</a></li>
-                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Trending</a></li>
-                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Tentang Kami</a></li>
+                  <li><Link href="#top" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Beranda</Link></li>
+                  <li><Link href="#konser" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Konser</Link></li>
+                  <li><Link href="#trending" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Trending</Link></li>
+                  <li><Link href="#tentang" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Tentang Kami</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h4 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 20px 0', color: '#ffffff', lineHeight: '1.2' }}> Bantuan </h4>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Cara Kerja</a></li>
-                  <li><a href="#" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>FAQ</a></li>
+                  <li><Link href="#cara-kerja" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>Cara Kerja</Link></li>
+                  <li><Link href="#faq" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '15px' }}>FAQ</Link></li>
                 </ul>
               </div>
 

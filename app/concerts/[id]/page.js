@@ -116,11 +116,6 @@ export default function ConcertDetailPage() {
       toast.error('Akun Event Organizer tidak dapat membeli tiket');
       return;
     }
-    if (!user) {
-      toast.error('Silakan login terlebih dahulu');
-      router.push('/login');
-      return;
-    }
     const selectedCategories = Object.entries(selectedTicketQuantities)
       .filter(([, quantity]) => quantity > 0)
       .map(([categoryId, quantity]) => `${categoryId}:${quantity}`);
@@ -129,7 +124,15 @@ export default function ConcertDetailPage() {
       toast.error('Pilih kategori tiket terlebih dahulu');
       return;
     }
-    router.push(`/checkout?concert=${concert.id}&categories=${selectedCategories.join(',')}`);
+
+    const checkoutPath = `/checkout?concert=${concert.id}&categories=${selectedCategories.join(',')}`;
+    if (!user) {
+      toast.error('Silakan login terlebih dahulu');
+      router.push(`/login?redirect=${encodeURIComponent(checkoutPath)}`);
+      return;
+    }
+
+    router.push(checkoutPath);
   };
 
   const updateTicketQuantity = (ticketCategory, change) => {

@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaEye, FaEyeSlash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { getSafeRedirectPath } from '../../lib/redirect-url';
 
 export default function RegisterCustomerPage() {
   const [formData, setFormData] = useState({
@@ -19,6 +21,7 @@ export default function RegisterCustomerPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { register } = useAuth();
+  const router = useRouter();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,6 +44,16 @@ export default function RegisterCustomerPage() {
       setError('An unexpected error occurred');
       setLoading(false);
     }
+  };
+
+  const handleLoginClick = (event) => {
+    const redirectTo = getSafeRedirectPath(
+      new URLSearchParams(window.location.search).get('redirect')
+    );
+    if (!redirectTo) return;
+
+    event.preventDefault();
+    router.push(`/login?redirect=${encodeURIComponent(redirectTo)}`);
   };
 
   return (
@@ -196,7 +209,7 @@ export default function RegisterCustomerPage() {
             </button>
 
             <p className="text-center text-1x1 text-gray-400 pt-1"> Sudah punya akun?{' '}
-              <Link href="/login" className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] font-medium hover:underline cursor-pointer"> Masuk di sini </Link>
+              <Link href="/login" onClick={handleLoginClick} className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] font-medium hover:underline cursor-pointer"> Masuk di sini </Link>
             </p>
           </form>
         </div>

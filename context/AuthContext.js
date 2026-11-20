@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { getSafeRedirectPath } from '../lib/redirect-url';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -196,6 +197,10 @@ export const AuthProvider = ({ children }) => {
       if (user.role === 'organizer') path = '/organizer/dashboard';
       else if (user.role === 'admin') path = '/admin/dashboard';
       else if (user.role === 'super_admin') path = '/super-admin/dashboard';
+      else {
+        const redirectTo = new URLSearchParams(window.location.search).get('redirect');
+        path = getSafeRedirectPath(redirectTo, path);
+      }
       
       setTimeout(() => {
         window.location.href = path;
@@ -240,6 +245,10 @@ export const AuthProvider = ({ children }) => {
       if (user.role === 'organizer') path = '/organizer/dashboard';
       else if (user.role === 'admin') path = '/admin/dashboard';
       else if (user.role === 'super_admin') path = '/super-admin/dashboard';
+      else {
+        const redirectTo = new URLSearchParams(window.location.search).get('redirect');
+        path = getSafeRedirectPath(redirectTo, path);
+      }
       
       setTimeout(() => {
         window.location.href = path;

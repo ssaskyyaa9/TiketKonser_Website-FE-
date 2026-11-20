@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { getSafeRedirectPath } from '../../lib/redirect-url';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,11 +18,13 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const requestedRedirect = new URLSearchParams(window.location.search).get('redirect');
     if (isAuthenticated && user) {
       let path = '/dashboard';
       if (user.role === 'organizer') path = '/organizer/dashboard';
       else if (user.role === 'admin') path = '/admin/dashboard';
       else if (user.role === 'super_admin') path = '/super-admin/dashboard';
+      else path = getSafeRedirectPath(requestedRedirect, path);
       
       router.replace(path);
     }
@@ -46,9 +49,19 @@ export default function LoginPage() {
     }
   };
 
+  const handleRegisterClick = (event) => {
+    const redirectTo = getSafeRedirectPath(
+      new URLSearchParams(window.location.search).get('redirect')
+    );
+    if (!redirectTo) return;
+
+    event.preventDefault();
+    router.push(`/registrasi?redirect=${encodeURIComponent(redirectTo)}`);
+  };
+
   return (
     <div className="min-h-screen lg:h-screen w-full bg-[#07050A] text-white flex items-center justify-center p-4 lg:px-12 relative overflow-x-hidden select-none">
-      <Link href="/registrasi" className="absolute top-4 left-4 lg:top-6 lg:left-6 cursor-pointer hover:opacity-80 transition-opacity z-20" >
+      <Link href="/registrasi" onClick={handleRegisterClick} className="absolute top-4 left-4 lg:top-6 lg:left-6 cursor-pointer hover:opacity-80 transition-opacity z-20" >
         <img src="/icons/previous.png" alt="Kembali" className="w-10 h-10 lg:w-12 lg:h-12 object-contain" />
       </Link>
 
@@ -202,7 +215,7 @@ export default function LoginPage() {
 
             <p className="text-center text-1x1 text-gray-400 pt-2">
               Belum punya akun?{' '}
-              <Link href="/registrasi" className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] font-medium hover:underline cursor-pointer">
+              <Link href="/registrasi" onClick={handleRegisterClick} className="text-transparent bg-clip-text bg-gradient-to-r from-[#1E3DFF] to-[#FA2F84] font-medium hover:underline cursor-pointer">
                 Daftar di sini
               </Link>
             </p>

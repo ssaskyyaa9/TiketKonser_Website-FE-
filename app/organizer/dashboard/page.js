@@ -467,7 +467,7 @@ export default function OrganizerDashboard() {
                 </Link>
 
                 <Link
-                  href="/organizer/scanner"
+                  href="/organizer/scan-ticket"
                   className="w-full flex items-center justify-between p-4 rounded-xl border border-white/15 bg-black/40 hover:border-white/30 transition-all text-white font-semibold text-xs sm:text-sm"
                 >
                   <span className="flex items-center gap-2.5">
@@ -482,7 +482,7 @@ export default function OrganizerDashboard() {
                 </Link>
 
                 <Link
-                  href="/organizer/promos"
+                  href="/organizer/promo"
                   className="w-full flex items-center justify-between p-4 rounded-xl border border-white/15 bg-black/40 hover:border-white/30 transition-all text-white font-semibold text-xs sm:text-sm"
                 >
                   <span className="flex items-center gap-2.5">

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FaCheck, FaSpinner, FaTimes, FaTrash } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const api = axios.create({ baseURL: API_URL });
@@ -23,6 +24,7 @@ const formatDate = (date) => new Intl.DateTimeFormat('id-ID', {
 
 export default function NotificationBell() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const panelRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -31,6 +33,8 @@ export default function NotificationBell() {
   const unreadCount = notifications.filter((notification) => !notification.isRead).length;
 
   const fetchNotifications = useCallback(async (showError = false) => {
+    if (authLoading || !user) return;
+
     try {
       setLoading(true);
       const response = await api.get('/users/notifications');
@@ -41,16 +45,18 @@ export default function NotificationBell() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authLoading, user]);
 
   useEffect(() => {
+    if (authLoading || !user) return;
+
     const timeout = setTimeout(() => { void fetchNotifications(true); }, 0);
     const interval = setInterval(() => { void fetchNotifications(); }, 30000);
     return () => {
       clearTimeout(timeout);
       clearInterval(interval);
     };
-  }, [fetchNotifications]);
+  }, [authLoading, fetchNotifications, user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

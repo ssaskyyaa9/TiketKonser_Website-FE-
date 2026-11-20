@@ -62,7 +62,8 @@ function CheckoutContent() {
     if (loading) return;
     if (!user) {
       toast.error('Silakan login terlebih dahulu');
-      router.push('/login');
+      const checkoutPath = `${window.location.pathname}${window.location.search}`;
+      router.push(`/login?redirect=${encodeURIComponent(checkoutPath)}`);
       return;
     }
     if (!concertId) return;

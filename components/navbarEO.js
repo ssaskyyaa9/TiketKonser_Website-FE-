@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import NotificationBell from './notificationbell';
 
 const NavbarEO = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -151,7 +152,7 @@ const NavbarEO = () => {
           { href: '/settings', icon: icons.settings, label: 'Pengaturan' },
         ];
 
-  const isLandingPage = pathname === '/';
+  const isLandingPage = pathname === '/' || pathname === '/landing';
   const displayName = user?.name ? user.name.split(' ')[0] : (user ? user.name : 'Pengguna');
 
   const getRoleLabel = () => {
@@ -234,7 +235,7 @@ const NavbarEO = () => {
               <Link href="/login" className="px-4 py-1.5 text-sm text-white hover:text-[#e040fb] transition-colors">
                 Login
               </Link>
-              <Link href="/register" className="px-4 py-1.5 text-sm rounded-full text-white font-medium shadow-lg hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
+              <Link href="/registrasi" className="px-4 py-1.5 text-sm rounded-full text-white font-medium shadow-lg hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
                 Register
               </Link>
             </div>
@@ -273,7 +274,7 @@ const NavbarEO = () => {
               <Link href="/login" className="text-center py-2.5 rounded-xl border border-white/20 text-white text-sm">
                 Login
               </Link>
-              <Link href="/register" className="text-center py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
+              <Link href="/registrasi" className="text-center py-2.5 rounded-xl text-white text-sm font-medium" style={{ background: 'linear-gradient(135deg, #6D19B0 0%, #B900A3 100%)' }} >
                 Register
               </Link>
             </div>

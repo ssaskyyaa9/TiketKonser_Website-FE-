@@ -109,9 +109,11 @@ export default function CustomerDashboard() {
 
     if (userRole !== 'customer') {
       if (userRole === 'organizer' || userRole === 'eo') {
-        router.replace('/eo/dashboard');
+        router.replace('/organizer/dashboard');
       } else if (userRole === 'admin') {
         router.replace('/admin/dashboard');
+      } else if (userRole === 'super_admin') {
+        router.replace('/super-admin/dashboard');
       } else {
         router.replace('/');
       }
