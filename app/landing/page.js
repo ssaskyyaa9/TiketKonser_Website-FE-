@@ -401,7 +401,7 @@ export default function LandingPage() {
                           <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>{concert.price}</span>
                         </div>
 
-                        <Link href={`/concerts/${concert.id}`} style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: 'none' }}>
+                        <Link href={`/concerts/${concert.id}?from=landing`} style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: 'none' }}>
                           Beli Tiket
                         </Link>
                       </div>
@@ -489,7 +489,7 @@ export default function LandingPage() {
                           <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>{concert.price}</span>
                         </div>
 
-                        <Link href={`/concerts/${concert.id}`} style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: 'none' }}>
+                        <Link href={`/concerts/${concert.id}?from=landing`} style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)', padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, color: '#ffffff', textDecoration: 'none' }}>
                           Beli Tiket
                         </Link>
                       </div>

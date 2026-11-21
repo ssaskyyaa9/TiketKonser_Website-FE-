@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -29,6 +30,7 @@ export default function RegisterOrganizerPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { register } = useAuth();
+  const router = useRouter();
 
   const ICON_PATH = '/icons';
 
@@ -101,8 +103,15 @@ export default function RegisterOrganizerPage() {
         }
       `}</style>
 
-      <Link
-        href="/"
+      <button
+        type="button"
+        onClick={() => {
+          if (typeof window !== 'undefined' && window.history.length > 1) {
+            router.back();
+          } else {
+            router.push('/login');
+          }
+        }}
         className="fixed top-7 left-7 z-20 w-11 h-11 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
       >
         <img
@@ -110,7 +119,7 @@ export default function RegisterOrganizerPage() {
           alt="Kembali"
           className="w-11 h-11 object-contain"
         />
-      </Link>
+      </button>
 
       <motion.div
         initial={{ opacity: 0, y: 18 }}

@@ -56,11 +56,19 @@ export default function RegisterCustomerPage() {
     router.push(`/login?redirect=${encodeURIComponent(redirectTo)}`);
   };
 
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/login');
+    }
+  };
+
   return (
     <div className="min-h-screen lg:h-screen w-full bg-[#07050A] text-white flex items-center justify-center p-4 lg:px-12 relative overflow-x-hidden select-none">
-      <Link href="/landing" className="absolute top-4 left-4 lg:top-6 lg:left-6 cursor-pointer hover:opacity-80 transition-opacity z-20" >
+      <button type="button" onClick={handleBack} className="absolute top-4 left-4 lg:top-6 lg:left-6 cursor-pointer hover:opacity-80 transition-opacity z-20" >
         <img src="/icons/previous.png" alt="Kembali" className="w-10 h-10 lg:w-12 lg:h-12 object-contain" />
-      </Link>
+      </button>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center pt-12 lg:pt-0">
         <div className="lg:col-span-6 space-y-2 lg:space-y-5 mt-9">

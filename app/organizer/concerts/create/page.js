@@ -358,7 +358,13 @@ export default function CreateConcertPage() {
           <div className="flex items-center gap-4">
             <button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.history.state?.idx > 0) {
+                  router.back();
+                } else {
+                  router.push('/organizer/concerts');
+                }
+              }}
               className="w-10 h-10 rounded-xl bg-[#120d1d] border border-white/15 hover:border-[#8B5CF6] flex items-center justify-center transition-colors"
             >
               <FaArrowLeft className="w-4 h-4 text-white" />

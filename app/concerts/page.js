@@ -415,7 +415,7 @@ export default function ConcertsPage() {
                         </span>
                       </div>
                       <Link
-                        href={`/concerts/${concert.id}`}
+                        href={`/concerts/${concert.id}?from=concerts`}
                         className="px-[12px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0"
                         style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }}
                       >

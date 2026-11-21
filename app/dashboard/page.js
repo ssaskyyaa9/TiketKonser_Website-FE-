@@ -40,13 +40,17 @@ const PRICE_FILTERS = [
 
 const getUserRole = (authUser) => {
   if (!authUser) return '';
-  return String(
+  const role = String(
     authUser.role ||
       authUser.userRole ||
       authUser.user_type ||
       authUser.type ||
       'customer'
-  ).toLowerCase();
+  ).toLowerCase().trim();
+
+  return ['organizer', 'eo', 'admin', 'super_admin'].includes(role)
+    ? role
+    : 'customer';
 };
 
 export default function CustomerDashboard() {
@@ -107,16 +111,16 @@ export default function CustomerDashboard() {
       return;
     }
 
-    if (userRole !== 'customer') {
-      if (userRole === 'organizer' || userRole === 'eo') {
-        router.replace('/organizer/dashboard');
-      } else if (userRole === 'admin') {
-        router.replace('/admin/dashboard');
-      } else if (userRole === 'super_admin') {
-        router.replace('/super-admin/dashboard');
-      } else {
-        router.replace('/');
-      }
+    if (userRole === 'organizer' || userRole === 'eo') {
+      router.replace('/organizer/dashboard');
+      return;
+    }
+    if (userRole === 'admin') {
+      router.replace('/admin/dashboard');
+      return;
+    }
+    if (userRole === 'super_admin') {
+      router.replace('/super-admin/dashboard');
       return;
     }
 
@@ -566,7 +570,7 @@ export default function CustomerDashboard() {
                             Rp {concert.minPrice != null ? Number(concert.minPrice).toLocaleString('id-ID') : '550.000'}
                           </span>
                         </div>
-                        <Link href={`/concerts/${concert.id}`}
+                        <Link href={`/concerts/${concert.id}?from=dashboard`}
                           className="px-[12px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0"
                           style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }}
                         >
@@ -681,7 +685,7 @@ export default function CustomerDashboard() {
                           <span className="block text-[9px] text-[#9ca3af]">Mulai dari</span>
                           <span className="text-[12px] font-bold text-white"> Rp {concert.minPrice != null ? Number(concert.minPrice).toLocaleString('id-ID') : '550.000'} </span>
                         </div>
-                        <Link href={`/concerts/${concert.id}`} className="px-[12px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0" style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }} > Beli Tiket </Link>
+                        <Link href={`/concerts/${concert.id}?from=dashboard`} className="px-[12px] py-[8px] rounded-[10px] text-[11px] font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0" style={{ background: 'linear-gradient(to right, #8138E8, #F73BE1)' }} > Beli Tiket </Link>
                       </div>
                     </div>
                   </div>
@@ -778,7 +782,7 @@ export default function CustomerDashboard() {
                     </div>
 
                     {concert ? (
-                      <Link href={`/concerts/${concert.id}`} className="px-6 py-2.5 min-w-[115px] text-center rounded-xl text-xs font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0" style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }} > Beli Tiket </Link>
+                      <Link href={`/concerts/${concert.id}?from=dashboard`} className="px-6 py-2.5 min-w-[115px] text-center rounded-xl text-xs font-semibold text-white shadow-md hover:opacity-90 transition-opacity shrink-0" style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }} > Beli Tiket </Link>
                     ) : (
                       <button type="button" className="px-6 py-2.5 min-w-[115px] text-center rounded-xl text-xs font-semibold text-white shadow-md shrink-0" style={{ background: 'linear-gradient(90deg, #B900A3 0%, #6D19B0 100%)' }} > Beli Tiket </button>
                     )}

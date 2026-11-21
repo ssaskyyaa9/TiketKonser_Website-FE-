@@ -89,18 +89,6 @@ export default function ConcertDetailPage() {
     }
   };
 
-  const handleBack = () => {
-    if (isOrganizer) {
-      router.push('/organizer/concerts');
-      return;
-    }
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push('/dashboard');
-    }
-  };
-
   const toggleWishlist = async () => {
     if (isOrganizer) return;
     if (!user) {
@@ -234,23 +222,35 @@ export default function ConcertDetailPage() {
       {/* Navbar menyesuaikan role akun */}
       {isOrganizer ? <NavbarEO /> : <Navbar />}
 
-      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
         {/* Tombol Kembali */}
         <div className="mb-4">
           <button
             type="button"
-            onClick={handleBack}
+            onClick={() => {
+              const source = new URLSearchParams(window.location.search).get('from')?.trim();
+              const returnPath = isOrganizer
+                ? '/organizer/concerts'
+                : {
+                    landing: '/landing',
+                    dashboard: '/dashboard',
+                    concerts: '/concerts',
+                  }[source] || '/dashboard';
+              window.location.assign(returnPath);
+            }}
             className="inline-flex items-center gap-5 text-1x1 font-medium text-white/90 transition-colors hover:text-white cursor-pointer"
           >
-            <Image
-              src="/icons/previous.png"
-              alt="Kembali"
-              width={30}
-              height={30}
-              unoptimized
-              className="object-contain"
-            />
-            {isOrganizer ? 'Kembali ke Konser Saya' : 'Kembali'}
+            <span className="relative block h-12 w-12 shrink-0 overflow-hidden rounded-full" aria-hidden="true">
+              <Image
+                src="/icons/back-button.png"
+                alt=""
+                fill
+                unoptimized
+                sizes="48px"
+                className="scale-[1.8] object-cover"
+              />
+            </span>
+            Kembali
           </button>
         </div>
 

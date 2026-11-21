@@ -306,7 +306,13 @@ function CheckoutContent() {
         {/* Tombol Kembali menggunakan /icons/prevoius.png */}
         <div className="mb-4">
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.state?.idx > 0) {
+                router.back();
+              } else {
+                router.push(concertId ? `/concerts/${concertId}` : '/concerts');
+              }
+            }}
             className="inline-flex items-center gap-2.5 text-lg font-extrabold text-white/90 transition-colors hover:text-white"
           >
             <Image 
