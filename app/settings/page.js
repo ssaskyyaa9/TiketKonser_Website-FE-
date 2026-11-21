@@ -40,15 +40,10 @@ api.interceptors.request.use(
 );
 
 export default function SettingsPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, preferences, updatePreferences } = useAuth();
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState('account');
-  const [accountPrefs, setAccountPrefs] = useState({
-    language: 'id',
-    timezone: 'Asia/Jakarta',
-    currency: 'IDR',
-  });
   const [savingPrefs, setSavingPrefs] = useState(false);
   const [savedNotice, setSavedNotice] = useState('');
 
@@ -78,9 +73,6 @@ export default function SettingsPage() {
       const savedRaw = localStorage.getItem(PREFS_STORAGE_KEY);
       if (!savedRaw) return;
       const parsed = JSON.parse(savedRaw);
-      if (parsed.accountPrefs) {
-        setAccountPrefs((prev) => ({ ...prev, ...parsed.accountPrefs }));
-      }
       if (typeof parsed.twoFactorEnabled === 'boolean') {
         setTwoFactorEnabled(parsed.twoFactorEnabled);
       }
@@ -144,7 +136,7 @@ export default function SettingsPage() {
     setSavedNotice('');
 
     try {
-      const ok = persistPrefs({ accountPrefs });
+      const accountPrefs = preferences;
 
       // Coba sinkronkan ke backend jika endpoint tersedia (tidak menggagalkan simpan lokal)
       try {
@@ -153,16 +145,15 @@ export default function SettingsPage() {
         // Lewati jika endpoint belum tersedia di backend
       }
 
-      if (ok) {
-        const jam = new Date().toLocaleTimeString('id-ID', {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-        setSavedNotice(`Preferensi tersimpan (${jam})`);
-        toast.success('Preferensi akun berhasil disimpan');
-      } else {
-        toast.error('Gagal menyimpan preferensi di browser');
-      }
+      const jam = new Date().toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      setSavedNotice(`Preferensi tersimpan (${jam})`);
+      toast.success('Preferensi akun berhasil disimpan');
+    } catch (error) {
+      console.error('Failed to save account preferences:', error);
+      toast.error('Gagal menyimpan preferensi di browser');
     } finally {
       setSavingPrefs(false);
     }
@@ -386,10 +377,10 @@ export default function SettingsPage() {
                   <label className="block text-xs font-semibold text-white/80">
                     Bahasa
                     <select
-                      value={accountPrefs.language}
+                      value={preferences.language}
                       onChange={(e) => {
                         setSavedNotice('');
-                        setAccountPrefs((prev) => ({ ...prev, language: e.target.value }));
+                        updatePreferences({ language: e.target.value });
                       }}
                       className="w-full mt-2 rounded-xl border border-white/15 bg-black/40 px-4 py-2.5 text-xs sm:text-sm text-white focus:border-white/40 focus:outline-none cursor-pointer [&>option]:bg-[#120d1d]"
                     >
@@ -401,10 +392,10 @@ export default function SettingsPage() {
                   <label className="block text-xs font-semibold text-white/80">
                     Zona Waktu
                     <select
-                      value={accountPrefs.timezone}
+                      value={preferences.timezone}
                       onChange={(e) => {
                         setSavedNotice('');
-                        setAccountPrefs((prev) => ({ ...prev, timezone: e.target.value }));
+                        updatePreferences({ timezone: e.target.value });
                       }}
                       className="w-full mt-2 rounded-xl border border-white/15 bg-black/40 px-4 py-2.5 text-xs sm:text-sm text-white focus:border-white/40 focus:outline-none cursor-pointer [&>option]:bg-[#120d1d]"
                     >
@@ -417,10 +408,10 @@ export default function SettingsPage() {
                   <label className="block text-xs font-semibold text-white/80 sm:col-span-2">
                     Mata Uang
                     <select
-                      value={accountPrefs.currency}
+                      value={preferences.currency}
                       onChange={(e) => {
                         setSavedNotice('');
-                        setAccountPrefs((prev) => ({ ...prev, currency: e.target.value }));
+                        updatePreferences({ currency: e.target.value });
                       }}
                       className="w-full mt-2 rounded-xl border border-white/15 bg-black/40 px-4 py-2.5 text-xs sm:text-sm text-white focus:border-white/40 focus:outline-none cursor-pointer [&>option]:bg-[#120d1d]"
                     >

@@ -22,16 +22,16 @@ api.interceptors.request.use((config) => {
 });
 
 export default function AdminSettingsPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, preferences, updatePreferences } = useAuth();
   const router = useRouter();
   const [settings, setSettings] = useState({
     siteName: 'ShowTime',
     siteDescription: 'Concert Ticket Booking Platform',
-    currency: 'IDR',
     emailVerification: true,
     twoFactorAuth: false,
     maintenanceMode: false
   });
+  const [systemCurrency, setSystemCurrency] = useState('IDR');
   const [loadingSettings, setLoadingSettings] = useState(true);
 
   useEffect(() => {
@@ -44,23 +44,26 @@ export default function AdminSettingsPage() {
       return;
     }
     if (user && user.role === 'super_admin') {
-      fetchSettings();
+      let cancelled = false;
+      api.get('/super-admin/system')
+        .then((response) => {
+          if (cancelled || !response.data.success) return;
+          const systemSettings = { ...response.data.data };
+          if (systemSettings.currency) setSystemCurrency(systemSettings.currency);
+          delete systemSettings.currency;
+          setSettings((current) => ({ ...current, ...systemSettings }));
+        })
+        .catch((error) => {
+          console.error('Error fetching settings:', error);
+        })
+        .finally(() => {
+          if (!cancelled) setLoadingSettings(false);
+        });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [user, loading, router]);
-
-  const fetchSettings = async () => {
-    try {
-      setLoadingSettings(true);
-      const response = await api.get('/super-admin/system');
-      if (response.data.success) {
-        setSettings((current) => ({ ...current, ...response.data.data }));
-      }
-    } catch (error) {
-      console.error('Error fetching settings:', error);
-    } finally {
-      setLoadingSettings(false);
-    }
-  };
 
   const handleSettingChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -72,7 +75,10 @@ export default function AdminSettingsPage() {
 
   const handleSaveSettings = async () => {
     try {
-      const response = await api.put('/super-admin/system', settings);
+      const response = await api.put('/super-admin/system', {
+        ...settings,
+        currency: systemCurrency,
+      });
       if (response.data.success) {
         toast.success('Pengaturan sistem berhasil disimpan');
       }
@@ -143,12 +149,25 @@ export default function AdminSettingsPage() {
               <label className="block font-semibold text-white/80 mb-1.5">Currency</label>
               <select 
                 name="currency"
-                value={settings.currency}
-                onChange={handleSettingChange}
+                value={preferences.currency}
+                onChange={(e) => updatePreferences({ currency: e.target.value })}
                 className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all cursor-pointer"
               >
                 <option value="IDR">Indonesian Rupiah (Rp)</option>
                 <option value="USD">US Dollar ($)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-white/80 mb-1.5">Language</label>
+              <select
+                name="language"
+                value={preferences.language}
+                onChange={(e) => updatePreferences({ language: e.target.value })}
+                className="w-full rounded-xl border border-white/15 bg-black/40 px-3.5 py-2.5 text-white focus:border-[#8B5CF6] focus:outline-none transition-all cursor-pointer"
+              >
+                <option value="id">Bahasa Indonesia</option>
+                <option value="en">English</option>
               </select>
             </div>
 

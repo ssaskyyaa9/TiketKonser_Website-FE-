@@ -1,9 +1,16 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useSyncExternalStore } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { getSafeRedirectPath } from '../lib/redirect-url';
+import {
+  DEFAULT_PREFERENCES,
+  applyPreferencesToDOM,
+  getPreferencesSnapshot,
+  savePreferences,
+  subscribePreferences,
+} from '../lib/preferences';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -61,9 +68,58 @@ export const useAuth = () => {
   return context;
 };
 
+function LocalizedContent({ children, language, currency }) {
+  useEffect(() => {
+    const root = document.body;
+    if (!root) return undefined;
+
+    const applyLocalization = (node = root) => {
+      document.documentElement.lang = language;
+      applyPreferencesToDOM(node, language, currency);
+    };
+    const handlePreferenceChange = () => applyLocalization();
+    applyLocalization();
+    window.addEventListener('showtime-preferences-change', handlePreferenceChange);
+
+    if (typeof MutationObserver === 'undefined') {
+      return () => window.removeEventListener('showtime-preferences-change', handlePreferenceChange);
+    }
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'characterData') {
+          applyLocalization(mutation.target);
+        } else if (mutation.type === 'attributes') {
+          applyLocalization(mutation.target);
+        } else {
+          mutation.addedNodes.forEach(applyLocalization);
+        }
+      });
+    });
+    observer.observe(root, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['alt', 'aria-label', 'placeholder', 'title'],
+    });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('showtime-preferences-change', handlePreferenceChange);
+    };
+  }, [language, currency]);
+
+  return children;
+}
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const preferences = useSyncExternalStore(
+    subscribePreferences,
+    getPreferencesSnapshot,
+    () => DEFAULT_PREFERENCES
+  );
   const [wishlistConcertIds, setWishlistConcertIds] = useState([]);
   const [wishlistBusyConcertIds, setWishlistBusyConcertIds] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
@@ -140,6 +196,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const removeWishlist = (concertId) => updateWishlist(concertId, false);
+
+  const updatePreferences = (nextPreferences) => {
+    savePreferences({ ...preferences, ...nextPreferences });
+  };
 
   const checkAuth = async () => {
     try {
@@ -310,6 +370,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    preferences,
+    updatePreferences,
     register,
     login,
     forgotPassword,
@@ -323,5 +385,11 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <LocalizedContent language={preferences.language} currency={preferences.currency}>
+        {children}
+      </LocalizedContent>
+    </AuthContext.Provider>
+  );
 };
